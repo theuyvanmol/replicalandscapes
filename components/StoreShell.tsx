@@ -1,1 +1,12 @@
-export default function StoreShell({children}:{children:React.ReactNode}){return <><header className="commerce-header"><a href="/" aria-label="Replica Landscapes home"><img src="/assets/replica-landscapes-heritage-transparent.png" alt="Replica Landscapes" width="470" height="77"/></a><nav><a href="/shop">Shop</a><a href="/our-story">Our story</a><a href="/bespoke-commercial">Bespoke & commercial</a><a href="/cart">Basket ↗</a></nav></header><main className="commerce-main">{children}</main><footer className="commerce-footer"><span>Replica Landscapes — considered greenery, lasting character.</span><a href="mailto:sales@replicaplants.co.uk">Discuss your space ↗</a></footer></>}
+import fs from 'node:fs';
+import path from 'node:path';
+import Script from 'next/script';
+const header=fs.readFileSync(path.join(process.cwd(),'content','store-header.html'),'utf8');
+export default function StoreShell({children}:{children:React.ReactNode}){return <div className="store-active">
+ <div dangerouslySetInnerHTML={{__html:header}}/>
+ <main className="store-wrap">{children}</main>
+ <footer className="wrap"><span>© 2026 Replica Landscapes</span><span>Lifelike planting. Lasting impressions.</span><a href="#">Back to top ↑</a></footer>
+ <Script src="/design/shop-menu.js" strategy="afterInteractive"/>
+ <Script src="/design/store-header.js" strategy="afterInteractive"/>
+ <Script src="/design/commerce-bridge.js" strategy="afterInteractive"/>
+</div>}
