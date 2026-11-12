@@ -1,0 +1,20 @@
+/* Homepage intro: the room seen through an arched doorway, then you walk in. */
+#intro{position:fixed;inset:0;z-index:2147483000;background:#f1efe7;overflow:hidden;animation:intro-out .55s ease 3.35s forwards;cursor:pointer}
+.no-intro #intro{display:none}
+.intro-room{position:absolute;inset:0;background:url(/assets/olive-scene.webp) center/cover no-repeat;transform:scale(1.025);
+ clip-path:inset(26% 37% 0% 37% round 999px 999px 0 0);animation:intro-walk 1.9s cubic-bezier(.65,0,.2,1) 1.35s forwards}
+.intro-room::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#f1efe700 55%,#f1efe72e);animation:intro-fade .9s ease 1.6s forwards}
+.intro-frame{position:absolute;left:37%;right:37%;top:26%;bottom:0;border-radius:999px 999px 0 0;box-shadow:0 0 0 1px #22382c1f,0 30px 80px -30px #22382c55;animation:intro-fade .5s ease 1.35s forwards}
+.intro-brand{position:absolute;left:50%;top:6.5%;transform:translateX(-50%);display:grid;justify-items:center;gap:12px;opacity:0;animation:intro-in .9s cubic-bezier(.2,.7,.2,1) .15s forwards,intro-leave .7s ease 1.35s forwards}
+.intro-brand img{width:min(470px,74vw);height:auto;display:block}
+.intro-brand span{font:600 10px/1 Manrope,Arial,sans-serif;letter-spacing:4px;text-transform:uppercase;color:#22382c;opacity:.75}
+.intro-skip{position:absolute;right:max(20px,env(safe-area-inset-right,0px));bottom:max(20px,env(safe-area-inset-bottom,0px));background:none;border:0;font:600 10px Manrope,Arial,sans-serif;letter-spacing:2px;text-transform:uppercase;color:#22382c99;cursor:pointer;animation:intro-fade .4s ease 1.35s forwards}
+@keyframes intro-in{from{opacity:0;transform:translate(-50%,14px)}to{opacity:1;transform:translate(-50%,0)}}
+@keyframes intro-leave{to{opacity:0;transform:translate(-50%,-28px) scale(1.06)}}
+@keyframes intro-walk{0%{clip-path:inset(26% 37% 0% 37% round 999px 999px 0 0);transform:scale(1.2)}100%{clip-path:inset(0% 0% 0% 0% round 0 0 0 0);transform:scale(1.025)}}
+@keyframes intro-fade{to{opacity:0}}
+@keyframes intro-out{to{opacity:0;visibility:hidden;pointer-events:none}}
+@media(max-width:700px){.intro-room{background-position:62% center;clip-path:inset(24% 16% 0% 16% round 999px 999px 0 0)}
+ .intro-frame{left:16%;right:16%;top:24%}
+ @keyframes intro-walk{0%{clip-path:inset(24% 16% 0% 16% round 999px 999px 0 0);transform:scale(1.2)}100%{clip-path:inset(0% 0% 0% 0% round 0 0 0 0);transform:scale(1.025)}}}
+html.intro-playing,html.intro-playing body{overflow:hidden}

@@ -10,6 +10,7 @@ export default async function Marketing({ kind }: { kind: 'home' | 'story' | 'co
  <Script src={kind==='home'?'/design/app.js':'/design/story.js'} strategy="afterInteractive" />
  <Script src="/design/shop-menu.js" strategy="afterInteractive" />
  <Script src="/design/commercial-motion.js" strategy="afterInteractive" />
+ <Script src="/design/intro.js" strategy="afterInteractive" />
  <Script src="/design/vs-map.js" strategy="afterInteractive" />
  <Script src="/design/commerce-bridge.js" strategy="afterInteractive" /></>;
 }
