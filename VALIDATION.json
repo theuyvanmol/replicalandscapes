@@ -1,0 +1,15 @@
+{
+  "checks": [
+    "TypeScript typecheck passed",
+    "Next.js production build passed",
+    "HTTP 200: homepage, shop, story, commercial, sample product, cart, robots, sitemap",
+    "Marketing image references checked",
+    "Legacy JavaScript syntax checked"
+  ],
+  "not_verified": [
+    "Live Shopify API, variant purchases and checkout require client credentials",
+    "Browser animation and responsive visual QA not performed in this export session"
+  ],
+  "architecture": "Next.js App Router + Shopify Storefront API + Shopify hosted checkout",
+  "catalogue": "Partial archived design sample only until Shopify is connected"
+}
