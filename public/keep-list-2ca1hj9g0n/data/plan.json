@@ -1,0 +1,595 @@
+{
+"launch": "2026-12-08",
+"start": "2026-11-16",
+"hypercareEnd": "2027-01-08",
+"done": {
+"title": "Done so far",
+"dates": "10–12 Nov",
+"theme": "Groundwork already in place",
+"tasks": [
+{
+"id": "d1",
+"text": "Full Visualsoft backup: product exports for both sites, live SEO for 4,863 pages and 1,690 product photos",
+"owner": "Agency"
+},
+{
+"id": "d2",
+"text": "Domain check: both domains are registered at IONOS; DNS is hosted by Visualsoft; email runs on IONOS",
+"owner": "Agency"
+},
+{
+"id": "d3",
+"text": "Product Keep List built for the client to review every product",
+"owner": "Agency"
+},
+{
+"id": "d4",
+"text": "New website built from the approved design on GitHub + Vercel, with all 1,057 products",
+"owner": "Agency"
+},
+{
+"id": "d5",
+"text": "Shop and product pages matched to the original design; 848 photos turned into cut-outs",
+"owner": "Agency"
+},
+{
+"id": "d6",
+"text": "Room Studio 3D planner added at /studio, with a homepage section",
+"owner": "Agency"
+}
+]
+},
+"weeks": [
+{
+"id": "w1",
+"title": "Week 1",
+"dates": "Mon 16 – Fri 20 Nov",
+"theme": "Secure and decide",
+"tasks": [
+{
+"id": "w1-1",
+"text": "Confirm both domains are in the client’s own IONOS account",
+"owner": "Client",
+"detail": "Log in to IONOS and check artificialplants.co.uk and replicaplants.co.uk are listed. If not, ask Visualsoft who holds the login."
+},
+{
+"id": "w1-2",
+"text": "Decide the primary domain and brand for the new store",
+"owner": "Both",
+"detail": "One of artificialplants.co.uk, replicaplants.co.uk or replicalandscapes.co.uk (not yet owned). Decide what the other domains do: redirect to the new store, or stay as a second shop.",
+"missed": true
+},
+{
+"id": "w1-3",
+"text": "Check the Visualsoft contract: notice period, end date, exit fees",
+"owner": "Client"
+},
+{
+"id": "w1-4",
+"text": "Ask Visualsoft in writing for the DNS zone files, customer and order export, newsletter list and reviews export",
+"owner": "Client",
+"detail": "Use the email draft. Keep the reply as proof of data handover."
+},
+{
+"id": "w1-5",
+"text": "Copy DNS from Visualsoft to IONOS record for record, then switch nameservers",
+"owner": "Agency",
+"detail": "Nothing visible changes. Test email sending and receiving straight after."
+},
+{
+"id": "w1-6",
+"text": "Client finishes the Product Keep List",
+"owner": "Client",
+"detail": "Every product marked Keep, Maybe or Remove. Maybes resolved by the end of the week.",
+"due": "Fri 20 Nov"
+},
+{
+"id": "w1-7",
+"text": "Open the Shopify store in the client’s name and add staff accounts",
+"owner": "Client",
+"detail": "Plan: Shopify (Basic is enough to start). The client should be the store owner, not the agency."
+},
+{
+"id": "w1-8",
+"text": "Choose payment methods: Shopify Payments, PayPal, Apple Pay and Google Pay",
+"owner": "Client",
+"detail": "Needs company details, bank account and VAT number."
+},
+{
+"id": "w1-9",
+"text": "Store a second copy of the Visualsoft backup (Google Drive or external drive)",
+"owner": "Client"
+},
+{
+"id": "w1-10",
+"text": "Turn on two-factor sign-in for Vercel, GitHub, IONOS and Shopify",
+"owner": "Both",
+"detail": "Vercel is already showing this prompt.",
+"missed": true
+}
+]
+},
+{
+"id": "w2",
+"title": "Week 2",
+"dates": "Mon 23 – Fri 27 Nov",
+"theme": "Build the store",
+"note": "Black Friday is Fri 27 Nov. The old site keeps trading; no changes to it this week except stock and prices.",
+"tasks": [
+{
+"id": "w2-1",
+"text": "Build the Shopify import file from the kept products only",
+"owner": "Agency",
+"detail": "Products, size options, prices, descriptions, tags, SEO titles and photos in order."
+},
+{
+"id": "w2-2",
+"text": "Import products and photos into Shopify and spot-check 30 products",
+"owner": "Agency"
+},
+{
+"id": "w2-3",
+"text": "Create Shopify collections matching the website’s categories and sub-categories",
+"owner": "Agency"
+},
+{
+"id": "w2-4",
+"text": "Set shipping zones and rates, including large trees, Highlands & islands and Northern Ireland",
+"owner": "Both",
+"detail": "Client decides prices; agency sets them up. Visualsoft’s courier rules are in the export.",
+"missed": true
+},
+{
+"id": "w2-5",
+"text": "Set VAT: prices include 20% VAT; add the VAT number to invoices",
+"owner": "Client"
+},
+{
+"id": "w2-6",
+"text": "Connect Shopify to the website so basket and checkout work on the preview",
+"owner": "Agency",
+"detail": "Two settings in Vercel: store domain and Storefront access token."
+},
+{
+"id": "w2-7",
+"text": "Move gift vouchers to Shopify gift cards and honour unspent Visualsoft vouchers",
+"owner": "Both",
+"detail": "Get a list of live voucher codes and balances from Visualsoft.",
+"missed": true
+},
+{
+"id": "w2-8",
+"text": "Import customers (passwords can’t move) and prepare the account invitation email",
+"owner": "Agency",
+"detail": "Only customers who can lawfully be contacted receive marketing."
+},
+{
+"id": "w2-9",
+"text": "Freeze new products on Visualsoft from Wed 25 Nov",
+"owner": "Client",
+"detail": "Anything added after this date must be added to Shopify too."
+}
+]
+},
+{
+"id": "w3",
+"title": "Week 3",
+"dates": "Mon 30 Nov – Fri 4 Dec",
+"theme": "Content, SEO and testing",
+"tasks": [
+{
+"id": "w3-1",
+"text": "Clean product descriptions: remove “Click here…” leftovers and merge summaries",
+"owner": "Agency"
+},
+{
+"id": "w3-2",
+"text": "Write the missing meta titles and descriptions (about 30 products)",
+"owner": "Agency"
+},
+{
+"id": "w3-3",
+"text": "Replace weak photos; reshoot key products on plain white if possible",
+"owner": "Client"
+},
+{
+"id": "w3-4",
+"text": "Legal pages: Terms, Privacy, Cookies, Delivery, Returns; company number and registered office in the footer",
+"owner": "Both",
+"detail": "UK sites must show the company’s legal name, number and registered office.",
+"missed": true
+},
+{
+"id": "w3-5",
+"text": "Cookie consent banner with Google Consent Mode",
+"owner": "Agency",
+"detail": "Needed before analytics or ad tracking runs.",
+"missed": true
+},
+{
+"id": "w3-6",
+"text": "301 redirect map: every old product, category and page URL on both domains to its new page",
+"owner": "Agency",
+"detail": "Built from the SEO crawl (4,863 URLs). Protects Google rankings."
+},
+{
+"id": "w3-7",
+"text": "Analytics and Google: GA4, Search Console, Merchant Center product feed, Meta pixel",
+"owner": "Agency"
+},
+{
+"id": "w3-8",
+"text": "Brand the order and shipping emails; add SPF, DKIM and DMARC so they don’t land in spam",
+"owner": "Agency",
+"missed": true
+},
+{
+"id": "w3-9",
+"text": "Move the newsletter list to Shopify Email or Klaviyo with consent records",
+"owner": "Client",
+"detail": "Mailjet is currently set up on the domain.",
+"missed": true
+},
+{
+"id": "w3-10",
+"text": "Make the contact and bespoke enquiry forms deliver to the sales inbox",
+"owner": "Agency",
+"missed": true
+},
+{
+"id": "w3-11",
+"text": "Test 10 real orders: card, PayPal, discount code, gift card, refund",
+"owner": "Both"
+},
+{
+"id": "w3-12",
+"text": "Test on phones and tablets; check page speed and accessibility",
+"owner": "Agency"
+},
+{
+"id": "w3-13",
+"text": "Client reviews the preview site and signs off",
+"owner": "Client",
+"due": "Fri 4 Dec"
+}
+]
+},
+{
+"id": "w4",
+"title": "Week 4",
+"dates": "Mon 7 – Fri 11 Dec",
+"theme": "Launch and handover",
+"tasks": [
+{
+"id": "w4-1",
+"text": "Final export from Visualsoft: new orders, stock and price changes since the import",
+"owner": "Agency",
+"due": "Mon 7 Dec"
+},
+{
+"id": "w4-2",
+"text": "Go live: point the domain at the new website and Shopify checkout; check SSL",
+"owner": "Agency",
+"due": "Tue 8 Dec"
+},
+{
+"id": "w4-3",
+"text": "Switch on the redirects and test 50 old URLs",
+"owner": "Agency",
+"due": "Tue 8 Dec"
+},
+{
+"id": "w4-4",
+"text": "Allow Google to index the site and submit the sitemap",
+"owner": "Agency",
+"due": "Tue 8 Dec"
+},
+{
+"id": "w4-5",
+"text": "Place a live order and check every email arrives",
+"owner": "Both",
+"due": "Tue 8 Dec"
+},
+{
+"id": "w4-6",
+"text": "Send customers the “new website” and password-reset email",
+"owner": "Client",
+"due": "Wed 9 Dec"
+},
+{
+"id": "w4-7",
+"text": "Daily checks: broken links (404s), orders, payments, Search Console",
+"owner": "Agency",
+"detail": "Every day until 8 Jan."
+},
+{
+"id": "w4-8",
+"text": "Handover meeting and Shopify training for the client team",
+"owner": "Both",
+"due": "Fri 11 Dec"
+}
+]
+},
+{
+"id": "after",
+"title": "After launch",
+"dates": "12 Dec – 8 Jan",
+"theme": "Settle in, then switch off Visualsoft",
+"tasks": [
+{
+"id": "a-1",
+"text": "30 days of monitoring: rankings, sales, errors",
+"owner": "Agency"
+},
+{
+"id": "a-2",
+"text": "Keep the Visualsoft account (not the website) until all data is confirmed",
+"owner": "Client"
+},
+{
+"id": "a-3",
+"text": "Give Visualsoft notice once the new site has run cleanly for 30 days",
+"owner": "Client",
+"due": "from 8 Jan"
+},
+{
+"id": "a-4",
+"text": "Cancel services tied to Visualsoft: Mailjet, payment links, feeds",
+"owner": "Client",
+"missed": true
+},
+{
+"id": "a-5",
+"text": "Review: what to improve in January (photos, Room Studio links to products, reviews)",
+"owner": "Both"
+}
+]
+}
+],
+"handover": [
+{
+"title": "Accounts and ownership",
+"tasks": [
+{
+"id": "h1-1",
+"text": "Shopify store owner is the client",
+"owner": "Client"
+},
+{
+"id": "h1-2",
+"text": "Vercel project moved to the client’s own Vercel team on the Pro plan",
+"owner": "Agency",
+"detail": "Vercel’s free Hobby plan is for personal, non-commercial use. A shop needs Pro.",
+"missed": true
+},
+{
+"id": "h1-3",
+"text": "GitHub repository owned by the client, with the agency as collaborator",
+"owner": "Agency"
+},
+{
+"id": "h1-4",
+"text": "IONOS domains in the client’s account, set to auto-renew (renewals Mar 2027 and Oct 2027)",
+"owner": "Client"
+},
+{
+"id": "h1-5",
+"text": "Google Analytics, Search Console and Merchant Center owned by a client email address",
+"owner": "Agency",
+"missed": true
+},
+{
+"id": "h1-6",
+"text": "Payment providers (Shopify Payments, PayPal) in the company’s name",
+"owner": "Client"
+},
+{
+"id": "h1-7",
+"text": "All logins shared through a password manager; two-factor recovery codes stored safely",
+"owner": "Both",
+"missed": true
+}
+]
+},
+{
+"title": "Domain and email",
+"tasks": [
+{
+"id": "h2-1",
+"text": "Every DNS record documented (website, checkout, email, verifications)",
+"owner": "Agency"
+},
+{
+"id": "h2-2",
+"text": "Email sending and receiving tested on every mailbox after the switch",
+"owner": "Both"
+},
+{
+"id": "h2-3",
+"text": "SPF, DKIM and DMARC records in place",
+"owner": "Agency"
+},
+{
+"id": "h2-4",
+"text": "Secondary domains redirect to the primary domain",
+"owner": "Agency"
+}
+]
+},
+{
+"title": "Store",
+"tasks": [
+{
+"id": "h3-1",
+"text": "Product count in Shopify matches the Keep List",
+"owner": "Agency"
+},
+{
+"id": "h3-2",
+"text": "Collections, shipping rates, VAT and payments checked by the client",
+"owner": "Client"
+},
+{
+"id": "h3-3",
+"text": "Checkout branded; order, shipping and refund emails branded",
+"owner": "Agency"
+},
+{
+"id": "h3-4",
+"text": "Gift cards and discount codes recreated",
+"owner": "Agency"
+},
+{
+"id": "h3-5",
+"text": "Store policies (refund, privacy, terms, shipping) filled in Shopify",
+"owner": "Client"
+}
+]
+},
+{
+"title": "Website",
+"tasks": [
+{
+"id": "h4-1",
+"text": "Every page reviewed on desktop and phone",
+"owner": "Both"
+},
+{
+"id": "h4-2",
+"text": "Forms deliver to the sales inbox",
+"owner": "Agency"
+},
+{
+"id": "h4-3",
+"text": "404 page, favicon and social share image set",
+"owner": "Agency"
+},
+{
+"id": "h4-4",
+"text": "Room Studio works; fallback image shows where 3D isn’t supported",
+"owner": "Agency"
+},
+{
+"id": "h4-5",
+"text": "Page speed and accessibility checked",
+"owner": "Agency"
+}
+]
+},
+{
+"title": "SEO",
+"tasks": [
+{
+"id": "h5-1",
+"text": "All 301 redirects live and spot-checked",
+"owner": "Agency"
+},
+{
+"id": "h5-2",
+"text": "Sitemap submitted; Search Console shows no errors",
+"owner": "Agency"
+},
+{
+"id": "h5-3",
+"text": "Every product has a meta title and description",
+"owner": "Agency"
+},
+{
+"id": "h5-4",
+"text": "If the domain changes: old domain kept in Search Console and Change of Address submitted",
+"owner": "Agency",
+"missed": true
+},
+{
+"id": "h5-5",
+"text": "Google Merchant Center feed approved; Shopping ads re-linked",
+"owner": "Agency"
+}
+]
+},
+{
+"title": "Data and compliance",
+"tasks": [
+{
+"id": "h6-1",
+"text": "Customers imported; order history archived for reference",
+"owner": "Agency"
+},
+{
+"id": "h6-2",
+"text": "Visualsoft backup stored in two places",
+"owner": "Client"
+},
+{
+"id": "h6-3",
+"text": "Privacy policy names the new processors (Shopify, Vercel, Google)",
+"owner": "Client",
+"missed": true
+},
+{
+"id": "h6-4",
+"text": "Cookie banner live and tested",
+"owner": "Agency"
+},
+{
+"id": "h6-5",
+"text": "Marketing consent carried across; unsubscribes respected",
+"owner": "Client",
+"missed": true
+}
+]
+},
+{
+"title": "Training and support",
+"tasks": [
+{
+"id": "h7-1",
+"text": "Client trained: products, stock, orders, refunds, discounts, gift cards",
+"owner": "Both"
+},
+{
+"id": "h7-2",
+"text": "Written guide: how to change website content and who to ask",
+"owner": "Agency"
+},
+{
+"id": "h7-3",
+"text": "Support agreement and response times agreed for after launch",
+"owner": "Both",
+"missed": true
+},
+{
+"id": "h7-4",
+"text": "Monthly running costs listed: Shopify, Vercel Pro, apps, domains",
+"owner": "Agency",
+"missed": true
+}
+]
+},
+{
+"title": "Switching off Visualsoft",
+"tasks": [
+{
+"id": "h8-1",
+"text": "Final data export received and checked",
+"owner": "Agency"
+},
+{
+"id": "h8-2",
+"text": "Notice given in writing; end date confirmed",
+"owner": "Client"
+},
+{
+"id": "h8-3",
+"text": "Integrations and subscriptions tied to Visualsoft cancelled",
+"owner": "Client"
+},
+{
+"id": "h8-4",
+"text": "Final invoice paid; account closed",
+"owner": "Client"
+}
+]
+}
+]
+}
