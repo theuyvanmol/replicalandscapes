@@ -28,7 +28,7 @@ export default function Installation(){const base=process.env.NEXT_PUBLIC_SITE_U
   {"@context":"https://schema.org","@type":"FAQPage",mainEntity:FAQ.map(([q,a])=>({"@type":"Question",name:q,acceptedAnswer:{"@type":"Answer",text:a}}))}];
  return <StoreShell><script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(ld).replace(/</g,'\\u003c')}}/>
  <div className="our-story-page ed-page">
-  <EdHero crumbs={[['Home','/'],['Bespoke & commercial','/bespoke-commercial/'],['Installation service']]} eyebrow="BESPOKE DESIGN & INSTALLATION" title={['Designed for your space.',<em key="e">Installed with care.</em>]}
+  <EdHero crumbs={[['Home','/'],['Bespoke & commercial','/bespoke-commercial/'],['Installation service']]} eyebrow="BESPOKE DESIGN & INSTALLATION" title={['Made for your space.',<em key="e">Installed with care.</em>]}
    lead="From a single statement tree to a blossom canopy across an entire restaurant, our team designs, builds and installs lifelike planting made to fit." link={<a className="text-link" href="#enquire">Request a quote ↓</a>}
    figure={<GImg slug="pink-artificial-cherry-blossom-tree-restaurant" sizes="100vw" eager/>} caption="BESPOKE BLOSSOM CANOPY / RESTAURANT INSTALLATION"/>
   <ul className="ed-figures"><li><b>16+</b><span>Years of bespoke<br/>planting projects</span></li><li><b>15m</b><span>Our tallest tree, a gold-leaf<br/>apple tree for a shopping centre</span></li><li><b>IFR &amp; UV</b><span>Fire-retardant and<br/>outdoor-ready foliage</span></li></ul>

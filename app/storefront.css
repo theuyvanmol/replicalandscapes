@@ -508,3 +508,8 @@
 /* ===== Store pages: full site footer ===== */
 .site-footer .visual-contact{margin-top:clamp(60px,8vw,110px);margin-bottom:0}
 .site-footer+footer{margin-top:0}
+.ed-page .intro-lead{font-weight:400}
+.ed-page p{font-weight:400}
+.ed-steps-section>div:first-child,.ed-faq>div:first-child{position:sticky;top:140px;align-self:start}
+@media(max-width:600px){.ed-steps-section>div:first-child,.ed-faq>div:first-child{position:static}}
+.store-active:has(.ed-page) .site-footer .visual-contact{margin-top:20px}
