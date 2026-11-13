@@ -13,7 +13,7 @@
  {name:'Pots, troughs & fillers',category:'Planters & troughs',title:'Beautiful from the ground up.',intro:'The right base. A considered finish.',image:'planter-real.webp',alt:'Sculptural beige planter',columns:[['Planters & troughs',[['All pots & planters',''],['Pots','Pot'],['Troughs','Trough'],['Footed planters','Footed']]],['Trough fillers',[['All trough fillers','','Trough fillers'],['Grasses for troughs','Grass','Trough fillers'],['Foliage fillers','Foliage','Trough fillers']]]]}
  ];
  // Use original catalogue photography for the floral feature, rather than a baked-in category graphic.
- const floralImage="catalogue/1098-0.jpg";groups[3].image=floralImage;groups[3].alt="Eco Hydrangea Stem 69cm";
+ const floralImage="floral-menu.webp";groups[3].image=floralImage;groups[3].alt="Eco Hydrangea Stem 69cm";
  const link=(g,item)=>item[4]||url(item[2]||g.category,item[1]||'',item[3]||{});
  const anchor=(g,item)=>`<a href="${link(g,item)}">${item[0]}<span aria-hidden="true">↗</span></a>`;
  const desktopNav=header.querySelector('nav[aria-label="Main navigation"]');

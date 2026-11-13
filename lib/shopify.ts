@@ -3,7 +3,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 let cached:any[]|null=null;
 function catalogue():any[]{if(!cached){const all=JSON.parse(fs.readFileSync(path.join(process.cwd(),'lib','catalogue.json'),'utf8')).products as any[];const keep=new Set<string>((JSON.parse(fs.readFileSync(path.join(process.cwd(),'lib','keep-list.json'),'utf8')).keep as number[]).map(String));cached=all.filter(p=>keep.has(String(p.id)));}return cached;}
-export type Product={id:string;handle:string;title:string;description:string;images:{url:string;altText:string|null;cutout?:boolean}[];price:string|null;currency:string;category:string;search?:string;variants:{id:string;title:string;availableForSale:boolean;price:{amount:string;currencyCode:string}}[]};
+import {facets,type Facets} from '@/lib/facets';
+export type Product={facets?:Facets;id:string;handle:string;title:string;description:string;images:{url:string;altText:string|null;cutout?:boolean}[];price:string|null;currency:string;category:string;search?:string;variants:{id:string;title:string;availableForSale:boolean;price:{amount:string;currencyCode:string}}[]};
 export const connected=Boolean(process.env.SHOPIFY_STORE_DOMAIN&&process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN);
 export async function graphql<T>(query:string,variables:Record<string,unknown>={}):Promise<T>{
  const domain=process.env.SHOPIFY_STORE_DOMAIN!;
@@ -12,9 +13,9 @@ export async function graphql<T>(query:string,variables:Record<string,unknown>={
  const data=await r.json();if(!r.ok||data.errors)throw new Error('Shopify request failed. Check store configuration.');return data.data;
 }
 const fields=`id handle title description productType images(first:12){nodes{url altText}} priceRange{minVariantPrice{amount currencyCode}} variants(first:100){nodes{id title availableForSale price{amount currencyCode}}}`;
-function map(p:any):Product{return {...p,category:p.productType,images:p.images.nodes,variants:p.variants.nodes,price:p.priceRange.minVariantPrice.amount,currency:p.priceRange.minVariantPrice.currencyCode};}
+function map(p:any):Product{return {...p,category:p.productType,images:p.images.nodes,variants:p.variants.nodes,price:p.priceRange.minVariantPrice.amount,currency:p.priceRange.minVariantPrice.currencyCode,facets:facets(p.title,p.description||'',p.variants.nodes.map((v:any)=>v.title))};}
 export async function products():Promise<Product[]>{
- if(!connected)return catalogue().map((p:any)=>({id:'vs-'+p.id,handle:p.handle,title:p.title,description:p.description||'Full product details will follow when the Shopify catalogue is connected.',images:p.images.map((im:any)=>typeof im==='string'?{url:im,altText:p.title}:{url:im.url,altText:p.title,cutout:!!im.cutout}),price:p.price===null?null:String(p.price),currency:'GBP',category:p.category,search:p.search,variants:p.variants.map((v:any)=>({id:v.id,title:v.title,availableForSale:true,price:{amount:String(v.price??p.price??0),currencyCode:'GBP'}}))}));
+ if(!connected)return catalogue().map((p:any)=>({id:'vs-'+p.id,handle:p.handle,title:p.title,description:p.description||'Full product details will follow when the Shopify catalogue is connected.',images:p.images.map((im:any)=>typeof im==='string'?{url:im,altText:p.title}:{url:im.url,altText:p.title,cutout:!!im.cutout}),price:p.price===null?null:String(p.price),currency:'GBP',category:p.category,search:p.search,variants:p.variants.map((v:any)=>({id:v.id,title:v.title,availableForSale:true,price:{amount:String(v.price??p.price??0),currencyCode:'GBP'}})),facets:facets(p.title,p.description||'',p.variants.map((v:any)=>v.title))}));
  let list:Product[]=[];let after:string|null=null;
  for(let page=0;page<50;page++){const data: any=await graphql(`query($after:String){products(first:100,after:$after){nodes{${fields}} pageInfo{hasNextPage endCursor}}}`,{after});list.push(...data.products.nodes.map(map));if(!data.products.pageInfo.hasNextPage)return list;after=data.products.pageInfo.endCursor;}
  throw new Error('Catalogue exceeded pagination limit. Increase the limit or use collection pagination.');

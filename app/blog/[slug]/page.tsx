@@ -3,7 +3,7 @@ import StoreShell from '@/components/StoreShell';
 import Prose from '@/components/Prose';
 import {EdFinal} from '@/components/Editorial';
 import PostCard from '@/components/PostCard';
-import {getPostBySlug,listPosts,ukFormat} from '@/lib/content';
+import {getPostBySlug,listPosts,ukFormat,imgSet} from '@/lib/content';
 export const revalidate=60;
 async function load(slug:string){try{const p=await getPostBySlug(slug);return p&&p.status==='published'&&new Date(p.date)<=new Date()?p:null;}catch{return null;}}
 export async function generateMetadata({params}:{params:Promise<{slug:string}>}){const {slug}=await params;const p=await load(slug);if(!p)return {title:'Article not found'};
@@ -20,7 +20,7 @@ export default async function Article({params}:{params:Promise<{slug:string}>}){
     <p className="eyebrow">{p.category.toUpperCase()} · {mins} MIN READ</p>
     <h1><span className="ed-line"><span>{p.title}</span></span></h1>
     <div className="story-hero-bottom ed-fade">{p.excerpt&&<p>{p.excerpt}</p>}<p className="ed-byline"><span>{p.author||'Replica Landscapes'}</span><time dateTime={p.date}>{date}</time></p></div>
-    {p.cover&&<figure className="ed-hero-figure ed-fade"><div className="ed-hero-img"><img src={p.cover} alt="" fetchPriority="high"/></div></figure>}
+    {p.cover&&<figure className="ed-hero-figure ed-fade"><div className="ed-hero-img"><img src={p.cover} srcSet={imgSet(p.cover)||undefined} sizes="100vw" alt="" fetchPriority="high"/></div></figure>}
    </section>
    <div className="ed-article">
     <aside className="ed-article-side"><p className="eyebrow">IN THIS STORY</p><p>{p.category}</p><p>{date}</p><a className="text-link" href="/blog">← All stories</a></aside>

@@ -15,7 +15,7 @@ export default function Prose({text}:{text:string}){
  return <div className="prose">{blocks.map((b,i)=>{
   if(b.startsWith('### '))return <h3 key={i}>{inline(b.slice(4),i)}</h3>;
   if(b.startsWith('## '))return <h2 key={i}>{inline(b.slice(3),i)}</h2>;
-  const img=/^!\[([^\]]*)\]\(([^)\s]+)\)$/.exec(b);if(img&&/^(\/|https?:\/\/)/.test(img[2]))return <figure key={i}><img src={img[2]} alt={img[1]} loading="lazy"/>{img[1]&&<figcaption>{img[1]}</figcaption>}</figure>;
+  const img=/^!\[([^\]]*)\]\(([^)\s]+)\)$/.exec(b);if(img&&/^(\/|https?:\/\/)/.test(img[2]))return <figure key={i}><img src={img[2]} srcSet={/^\/gallery\/img\/[a-z0-9-]+\.webp$/.test(img[2])?`${img[2].replace(/\.webp$/,"-sm.webp")} 800w, ${img[2]} 1800w`:undefined} sizes="(max-width:760px) 100vw, 680px" alt={img[1]} loading="lazy" decoding="async"/>{img[1]&&<figcaption>{img[1]}</figcaption>}</figure>;
   const lines=b.split('\n');
   if(lines.every(l=>/^[-*] /.test(l)))return <ul key={i}>{lines.map((l,j)=><li key={j}>{inline(l.slice(2),i*100+j)}</li>)}</ul>;
   if(lines.every(l=>/^\d+\. /.test(l)))return <ol key={i}>{lines.map((l,j)=><li key={j}>{inline(l.replace(/^\d+\. /,''),i*100+j)}</li>)}</ol>;

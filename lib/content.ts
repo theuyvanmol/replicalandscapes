@@ -61,3 +61,7 @@ const ukOffsetH=(d:Date)=>{const n=new Intl.DateTimeFormat('en-GB',{timeZone:'Eu
 export function ukLocalToISO(local:string){if(!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(local))return '';const asUtc=new Date(local+':00Z');return new Date(asUtc.getTime()-ukOffsetH(asUtc)*36e5).toISOString();}
 export function isoToUkLocal(iso:string){const d=new Date(iso);if(isNaN(+d))return '';const p=Object.fromEntries(new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/London',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(d).map(x=>[x.type,x.value]));return `${p.year}-${p.month}-${p.day}T${p.hour}:${p.minute}`;}
 export const ukFormat=(iso:string,o:Intl.DateTimeFormatOptions={weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})=>new Date(iso).toLocaleString('en-GB',{timeZone:'Europe/London',...o});
+
+/* Gallery photos come in two sizes; cards use the 800px version. */
+export const smallImg=(u:string)=>u.replace(/^(\/gallery\/img\/[a-z0-9-]+)\.webp$/,'$1-sm.webp');
+export const imgSet=(u:string)=>/^\/gallery\/img\/[a-z0-9-]+\.webp$/.test(u)?`${smallImg(u)} 800w, ${u} 1800w`:'';

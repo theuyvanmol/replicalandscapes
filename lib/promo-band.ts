@@ -1,5 +1,5 @@
 import 'server-only';
-import {homepagePromos,promoState,ukFormat,type Promo} from '@/lib/content';
+import {homepagePromos,promoState,ukFormat,imgSet,type Promo} from '@/lib/content';
 const esc=(s:string)=>s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]!));
 const count=(to:string,label:string)=>`<div class="pb-count" data-to="${esc(to)}"><small class="pb-count-l">${label}</small><span><b data-u="d">00</b><small>Days</small></span><span><b data-u="h">00</b><small>Hours</small></span><span><b data-u="m">00</b><small>Minutes</small></span><span><b data-u="s">00</b><small>Seconds</small></span></div>`;
 function when(p:Promo){const same=ukFormat(p.start,{day:'numeric',month:'short'})===ukFormat(p.end,{day:'numeric',month:'short'});
@@ -12,7 +12,7 @@ export async function promoBandHtml(){
   const ticker=p.ticker?p.ticker.split(',').map(s=>s.trim()).filter(Boolean):[];
   const track=ticker.length?`<div class="pb-ticker" aria-hidden="true"><div class="pb-track">${Array(4).fill(ticker.map(t=>`<span>${esc(t)}</span><i>✦</i>`).join('')).join('')}</div></div>`:'';
   return `<article class="pb-slide theme-${p.theme}${p.image?' has-img':''}${i===0?' is-active':''}" data-slide="${i}" aria-roledescription="slide" aria-label="${i+1} of ${list.length}: ${esc(p.title)}"${i?' aria-hidden="true"':''}>
-${p.image?`<img class="pb-media" src="${esc(p.image)}" alt="" loading="${i?'lazy':'eager'}">`:''}
+${p.image?`<img class="pb-media" src="${esc(p.image)}"${imgSet(p.image)?` srcset="${imgSet(p.image)}" sizes="(max-width:900px) 100vw, 1440px"`:''} alt="" loading="lazy" decoding="async">`:''}
 <div class="pb-inner"><div class="pb-copy">
 <p class="eyebrow pb-eyebrow">${esc((p.eyebrow||(p.kind==='event'?'Event':'Offer')).toUpperCase())}${upcoming?' / COMING SOON':''}</p>
 <h2 class="pb-title">${esc(p.title)}</h2>${p.text?`<p class="pb-text">${esc(p.text)}</p>`:''}
