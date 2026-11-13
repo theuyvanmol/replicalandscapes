@@ -13,10 +13,10 @@ export default async function Article({params}:{params:Promise<{slug:string}>}){
  const ld={"@context":"https://schema.org","@type":"BlogPosting",headline:p.title,description:p.metaDescription||p.excerpt,datePublished:p.date,dateModified:p.updated||p.date,author:{"@type":p.author?"Person":"Organization",name:p.author||'Replica Landscapes'},publisher:{"@type":"Organization",name:'Replica Landscapes'},image:p.cover?[p.cover.startsWith('/')?base+p.cover:p.cover]:undefined,mainEntityOfPage:base+'/blog/'+p.slug};
  return <StoreShell><script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(ld).replace(/</g,'\\u003c')}}/>
   <nav className="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/blog">Blog</a> / {p.title}</nav>
+  <header className={'post-hero full'+(p.cover?'':' no-cover')}>{p.cover&&<div className="post-hero-media" data-parallax="0.15"><img src={p.cover} alt=""/></div>}<div className="post-hero-scrim" aria-hidden="true"/>
+   <div className="post-hero-copy"><p className="eyebrow">{p.category}</p><h1><span className="ln"><span>{p.title}</span></span></h1>{p.excerpt&&<p className="post-lede">{p.excerpt}</p>}
+    <p className="post-by">{p.author&&<span>By {p.author}</span>}<time dateTime={p.date}>{ukFormat(p.date,{day:'numeric',month:'long',year:'numeric'})}</time><span>{Math.max(1,Math.round(p.body.split(/\s+/).length/220))} min read</span></p></div></header>
   <article className="post">
-   <header className="post-head"><p className="eyebrow">{p.category}</p><h1>{p.title}</h1>{p.excerpt&&<p className="post-lede">{p.excerpt}</p>}
-    <p className="post-by">{p.author&&<span>By {p.author}</span>}<time dateTime={p.date}>{ukFormat(p.date,{day:'numeric',month:'long',year:'numeric'})}</time></p></header>
-   {p.cover&&<figure className="post-cover"><img src={p.cover} alt=""/></figure>}
    <div className="post-body"><Prose text={p.body}/></div>
    <footer className="post-foot"><a className="pill" href="/blog">← All articles</a><a className="pill" href="/bespoke-commercial">Plan a project ↗</a></footer>
   </article>

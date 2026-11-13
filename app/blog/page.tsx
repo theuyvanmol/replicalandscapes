@@ -15,8 +15,8 @@ export default async function Blog({searchParams}:{searchParams:Promise<{categor
   <div className="store-heading blog-heading"><p className="eyebrow">Notes from the studio</p><h1>{category||'The journal'}.</h1><p>Ideas, care guides and recent projects.</p></div>
   {cats.length>1&&<nav className="blog-cats" aria-label="Blog categories"><a href="/blog" aria-current={!category?'page':undefined}>All</a>{cats.map(c=><a key={c} href={'/blog?category='+encodeURIComponent(c)} aria-current={category===c?'page':undefined}>{c}</a>)}</nav>}
   {!lead?<div className="blog-empty"><span className="blog-empty-arch"/><h2>New stories are on their way.</h2><p>We&rsquo;re putting together ideas, care guides and recent projects. Check back soon.</p><a className="pill" href="/shop">Explore the collection ↗</a></div>:<>
-   <article className="blog-lead"><a href={'/blog/'+lead.slug} className="blog-lead-img">{lead.cover?<img src={lead.cover} alt=""/>:<span className="blog-noimg"/>}</a>
-    <div className="blog-lead-copy"><p className="blog-meta"><span>{lead.category}</span>{day(lead.date)}</p><h2><a href={'/blog/'+lead.slug}>{lead.title}</a></h2>{lead.excerpt&&<p>{lead.excerpt}</p>}<a className="pill" href={'/blog/'+lead.slug}>Read article ↗</a></div></article>
+   <article className="blog-hero full"><div className="blog-hero-media" data-parallax="0.12">{lead.cover?<img src={lead.cover} alt=""/>:<span className="blog-noimg"/>}</div><div className="blog-hero-scrim" aria-hidden="true"/>
+    <div className="blog-hero-copy"><p className="blog-meta"><span>Latest · {lead.category}</span>{day(lead.date)}</p><h2><a href={'/blog/'+lead.slug}>{lead.title}</a></h2>{lead.excerpt&&<p>{lead.excerpt}</p>}<a className="pill" href={'/blog/'+lead.slug}>Read article ↗</a></div></article>
    {rest.length>0&&<div className="blog-grid">{rest.map(p=><Card key={p.id} p={p}/>)}</div>}
   </>}
  </StoreShell>;

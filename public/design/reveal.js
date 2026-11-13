@@ -10,7 +10,7 @@
  const proxy=new Map();
  const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){[e.target,...(proxy.get(e.target)||[])].forEach(t=>t.classList.add('rv-in'));io.unobserve(e.target);}}),{rootMargin:'0px 0px -10% 0px',threshold:.05});
  all.forEach(e=>{if(e.classList.contains('rv-wipe')&&e.parentElement){const p=e.parentElement;proxy.set(p,[...(proxy.get(p)||[]),e]);io.observe(p);}else io.observe(e);});
- requestAnimationFrame(()=>document.querySelectorAll('.in-hero,.gl-hero').forEach(h=>h.classList.add('is-on')));
+ requestAnimationFrame(()=>document.querySelectorAll('.in-hero,.gl-hero,.post-hero,.blog-hero').forEach(h=>h.classList.add('is-on')));
  const px=[...document.querySelectorAll('[data-parallax]')];if(!px.length)return;let tick=false;
  const run=()=>{tick=false;const vh=innerHeight;px.forEach(el=>{const r=el.parentElement.getBoundingClientRect();if(r.bottom<0||r.top>vh)return;const f=parseFloat(el.dataset.parallax)||.15;el.style.transform=`translate3d(0,${((r.top+r.height/2)-vh/2)*-f}px,0)`;});};
  addEventListener('scroll',()=>{if(!tick){tick=true;requestAnimationFrame(run);}},{passive:true});run();
