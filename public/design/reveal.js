@@ -6,7 +6,10 @@
  document.querySelectorAll('.in-line,.in-app-img,.blog-lead-img,.blog-card-img,.post-cover').forEach(el=>el.classList.add('rv-wipe'));
  const all=document.querySelectorAll('.rv,.rv-wipe');
  if(reduce||!('IntersectionObserver' in window)){all.forEach(e=>e.classList.add('rv-in'));return;}
- const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('rv-in');io.unobserve(e.target);}}),{rootMargin:'0px 0px -10% 0px',threshold:.08});all.forEach(e=>io.observe(e));
+ // a fully clipped element is never reported as visible, so wipes are watched through their parent
+ const proxy=new Map();
+ const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){(proxy.get(e.target)||[e.target]).forEach(t=>t.classList.add('rv-in'));io.unobserve(e.target);}}),{rootMargin:'0px 0px -10% 0px',threshold:.05});
+ all.forEach(e=>{if(e.classList.contains('rv-wipe')&&e.parentElement){const p=e.parentElement;proxy.set(p,[...(proxy.get(p)||[]),e]);io.observe(p);}else io.observe(e);});
  requestAnimationFrame(()=>document.querySelectorAll('.in-hero,.gl-hero').forEach(h=>h.classList.add('is-on')));
  const px=[...document.querySelectorAll('[data-parallax]')];if(!px.length)return;let tick=false;
  const run=()=>{tick=false;const vh=innerHeight;px.forEach(el=>{const r=el.parentElement.getBoundingClientRect();if(r.bottom<0||r.top>vh)return;const f=parseFloat(el.dataset.parallax)||.15;el.style.transform=`translate3d(0,${((r.top+r.height/2)-vh/2)*-f}px,0)`;});};
