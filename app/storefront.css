@@ -401,7 +401,7 @@
 .rv-ready .rv-wipe img{transform:scale(1.18);transition:transform 2s cubic-bezier(.2,.8,.2,1)}
 .rv-ready .rv-wipe.rv-in{clip-path:inset(0 0 0 0 round 20px)}
 .rv-ready .rv-wipe.rv-in img{transform:scale(1)}
-.ln{display:block;overflow:hidden;padding-bottom:.06em}.ln>span{display:inline-block;transform:translateY(105%);transition:transform 1.3s cubic-bezier(.2,.8,.2,1)}
+.ln{display:block;overflow:hidden;padding-bottom:.12em;margin-bottom:-.12em}.ln>span{display:inline-block;transform:translateY(105%);transition:transform 1.3s cubic-bezier(.2,.8,.2,1)}
 .ln+.ln>span{transition-delay:.12s}
 .is-on .ln>span{transform:none}
 
@@ -411,14 +411,14 @@
 .gl-row{overflow:hidden}
 .gl-track{display:flex;gap:14px;height:100%;width:max-content;animation:gl-drift 70s linear infinite}
 .gl-row:nth-child(2) .gl-track{animation-direction:reverse;animation-duration:85s}
-.gl-track img{height:100%;width:auto;border-radius:14px;object-fit:cover;filter:saturate(.9)}
+.gl-track img{height:100%;width:auto;aspect-ratio:4/3;border-radius:14px;object-fit:cover;filter:saturate(.9);background:#1f2a23}
 @keyframes gl-drift{to{transform:translateX(-50%)}}
 .gl-hero-scrim{position:absolute;inset:0;background:linear-gradient(180deg,#141c1799 0,#141c1755 35%,#141c17e6 85%),radial-gradient(ellipse at 30% 80%,#141c17cc,transparent 60%)}
-.gl-hero-copy{position:relative;padding:0 6% clamp(50px,7vw,90px);max-width:900px}
+.gl-hero-copy{position:relative;padding:0 6% clamp(50px,7vw,90px);max-width:1150px}
 .gl-hero .eyebrow{color:#c9d3a6}
-.gl-hero h1{font:400 clamp(60px,9vw,150px)/.9 var(--serif);letter-spacing:-.025em;margin:18px 0 22px;color:#fff}
+.gl-hero h1{font:400 clamp(56px,8vw,128px)/1 var(--serif);letter-spacing:-.025em;margin:14px 0 20px;color:#fff}
 .gl-hero h1 em{color:#c9d3a6}
-.gl-hero h1 .ln{display:inline-block}
+.gl-hero h1 .ln{display:inline-block;padding-bottom:.14em;margin-bottom:-.14em;vertical-align:top}
 .gl-hero-copy>p:not(.eyebrow){max-width:560px;font-size:16px;line-height:1.75;color:#e3e3d8;margin:0 0 26px;opacity:0;transform:translateY(20px);transition:1s .5s cubic-bezier(.2,.8,.2,1)}
 .gl-down{display:inline-flex;gap:10px;align-items:center;font-size:12px;letter-spacing:2px;text-transform:uppercase;border-bottom:1px solid #ffffff66;padding-bottom:4px;color:#fff;opacity:0;transition:opacity 1s .8s}
 .gl-down span{display:inline-block;animation:gl-bob 2s ease-in-out infinite}
