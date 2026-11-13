@@ -1,5 +1,5 @@
 import {staffLogout} from '@/app/admin/actions';import type {User} from '@/lib/auth';
-const NAV:[string,string,string[]?][]=[['/admin','Dashboard'],['/admin/products','Products'],['/admin/promotions','Promotions & events'],['/admin/blog','Blog'],['/admin/enquiries','Enquiries'],['/admin/customers','Customers',['owner','admin']],['/admin/team','Team',['owner','admin']],['/admin/settings','Settings']];
+const NAV:[string,string,string[]?][]=[['/admin','Dashboard'],['/admin/products','Products'],['/admin/promotions','Promotions & events'],['/admin/blog','Blog'],['/admin/enquiries','Enquiries'],['/admin/projects','Projects'],['/admin/care','Plant care'],['/admin/customers','Customers',['owner','admin']],['/admin/team','Team',['owner','admin']],['/admin/settings','Settings']];
 const SOON=['Orders','Collections','Homepage content','SEO & redirects'];
 export default function AdminShell({user,active,title,eyebrow,actions,children}:{user:User;active:string;title:string;eyebrow?:string;actions?:React.ReactNode;children:React.ReactNode}){
  return <div className="adm">

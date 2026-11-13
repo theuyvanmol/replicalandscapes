@@ -1,0 +1,23 @@
+import AdminShell,{AdmNotice} from '@/components/AdminShell';import PlantPicker from '@/components/PlantPicker';import {requireStaff} from '@/lib/auth';
+import {allPlantOwners,careStatus} from '@/lib/portal';import {pickList} from '@/lib/plant-catalogue';import {teamAddPlant,teamCareDone,teamRemovePlant} from '@/app/admin/portal-actions';
+export const metadata={title:'Plant care · Admin',robots:{index:false,follow:false}};export const dynamic='force-dynamic';
+export default async function Care({searchParams}:{searchParams:Promise<{saved?:string;e?:string;email?:string;show?:string}>}){
+ const u=await requireStaff();const {saved,e,email,show}=await searchParams;const [owners,items]=await Promise.all([allPlantOwners(),pickList()]);
+ const rows=owners.flatMap(o=>o.plants.map(p=>({email:o.email,p,s:careStatus(p)}))).sort((a,b)=>a.s.days-b.s.days);
+ const due=rows.filter(r=>r.s.state==='due'),soon=rows.filter(r=>r.s.state==='soon');const list=show==='all'?rows:rows.filter(r=>r.s.state!=='ok');
+ return <AdminShell user={u} active="/admin/care" eyebrow="Leaf Clean & aftercare" title="Plant care" actions={<a className="pill" href="#add">Add plants to a customer <span aria-hidden="true">+</span></a>}>
+  {saved&&<AdmNotice>{saved==='added'?'Added. The customer sees it in their account with care reminders.':saved==='care'?'Marked as cared for.':'Removed.'}</AdmNotice>}{e==='add'&&<AdmNotice kind="error">Add a valid customer email and choose a product.</AdmNotice>}
+  <div className="adm-stats"><div className="adm-stat"><small>Customers with plants</small><b>{owners.filter(o=>o.plants.length).length}</b><span>tracked in accounts</span></div><div className="adm-stat"><small>Plants tracked</small><b>{rows.length}</b><span>across all customers</span></div><div className="adm-stat"><small>Care due now</small><b>{due.length}</b><span>a good moment to offer Leaf Clean</span></div><div className="adm-stat"><small>Due in 14 days</small><b>{soon.length}</b><span>coming up</span></div></div>
+  <p className="adm-banner">Customers see these plants in their account with care tips and reminders. When care is due, it’s a natural moment to call and offer a Leaf Clean visit or a refresh.</p>
+  <section className="adm-card adm-wide"><h2>{show==='all'?'All tracked plants':'Due now and coming up'} <a className="adm-clear" href={show==='all'?'/admin/care':'/admin/care?show=all'}>{show==='all'?'Show only due':'Show all'}</a></h2>
+   {list.length?<div className="adm-table-wrap"><table className="adm-table"><thead><tr><th></th><th>Plant</th><th>Customer</th><th>Location</th><th>Care</th><th></th></tr></thead><tbody>
+    {list.map(({email:em,p,s})=><tr key={em+p.id}><td className="thumb">{p.image&&<img src={p.image} alt=""/>}</td><td><b>{p.title}</b><span>{p.size||p.category}</span></td><td><a href={'mailto:'+em}>{em}</a></td><td>{p.room||'–'}</td>
+     <td><span className={'adm-status '+(s.state==='due'?'s-live':s.state==='soon'?'s-sched':'s-draft')}>{s.state==='due'?`Due ${-s.days} days ago`.replace('Due 0 days ago','Due today'):`In ${s.days} days`}</span></td>
+     <td><form action={teamCareDone}><input type="hidden" name="email" value={em}/><input type="hidden" name="id" value={p.id}/><button className="adm-clear">Mark cared for</button></form>{['owner','admin'].includes(u.role)&&<form action={teamRemovePlant}><input type="hidden" name="email" value={em}/><input type="hidden" name="id" value={p.id}/><button className="adm-remove">Remove</button></form>}</td></tr>)}
+   </tbody></table></div>:<p className="adm-muted">{rows.length?'Nothing due in the next two weeks.':'No plants tracked yet. Add plants for customers after an order or installation, or customers can add their own.'}</p>}
+  </section>
+  <section className="adm-card" id="add"><h2>Add plants to a customer</h2><p className="adm-muted">Use this after an installation or phone order. The customer sees the plant in their account (they need to register with this email).</p>
+   <form action={teamAddPlant} className="ed-form adm-plant-form"><label>Customer email<input name="email" type="email" required defaultValue={email||''}/></label><PlantPicker items={items}/>
+    <label>Room or location<input name="room" placeholder="e.g. Reception, roof terrace"/></label><label>Installed or delivered<input type="month" name="installed" defaultValue={new Date().toISOString().slice(0,7)}/></label>
+    <label>Note for the customer <span>Optional</span><input name="note" placeholder="e.g. Fire certificate in your project documents"/></label><button className="pill">Add plant</button></form></section>
+ </AdminShell>;}

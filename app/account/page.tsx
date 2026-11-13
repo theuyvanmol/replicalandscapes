@@ -1,29 +1,60 @@
-import StoreShell from '@/components/StoreShell';import {Notice} from '@/components/AuthLayout';import {requireCustomer} from '@/lib/auth';import {getUser} from '@/lib/auth';import {logout,updateProfile,changePassword} from '@/app/account/actions';import {connected} from '@/lib/shopify';
+import StoreShell from '@/components/StoreShell';import {Notice} from '@/components/AuthLayout';import {requireCustomer} from '@/lib/auth';import {getUser} from '@/lib/auth';import {logout,updateProfile,changePassword} from '@/app/account/actions';import {connected} from '@/lib/shopify';import {listPlants,careStatus,listProjects,pendingApprovals,unreadForClient,STAGES} from '@/lib/portal';import {PlantMini} from '@/components/PlantCard';
 export const metadata={title:'Your account',robots:{index:false,follow:false}};export const dynamic='force-dynamic';
 const MSG:Record<string,[string,'ok'|'error']>={name:['Please add your name.','error'],current:['Your current password isn’t right.','error'],password:['Your new password needs at least 10 characters.','error']};
 export default async function Account({searchParams}:{searchParams:Promise<{e?:string;saved?:string;welcome?:string}>}){
  const u=await requireCustomer();const full=await getUser(u.email) as Record<string,string>|null;const {e,saved,welcome}=await searchParams;
  const first=u.name.split(' ')[0];
- return <StoreShell><div className="account-page">
-  <nav className="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a> / Your account</nav>
-  <div className="account-head"><div><p className="eyebrow">Your account</p><h1>{welcome?'Welcome, ':'Hello, '}{first}.</h1><p>Signed in as {u.email}</p></div><form action={logout}><button className="account-out">Sign out ↗</button></form></div>
-  {welcome&&<Notice kind="ok">Your account is ready. We’ll keep your details safe and you can change them at any time.</Notice>}
+ const [plants,projects]=await Promise.all([listPlants(u.email).catch(()=>[]),listProjects(u.email).catch(()=>[])]);
+ const due=plants.filter(p=>p.reminders&&careStatus(p).state==='due');const approvals=projects.reduce((n,p)=>n+pendingApprovals(p),0);const news=projects.reduce((n,p)=>n+unreadForClient(p),0);
+ const byDue=[...plants].sort((a,b)=>careStatus(a).days-careStatus(b).days);
+ return <StoreShell><div className="our-story-page ed-page acc">
+  <section className="our-story-hero ed-hero acc-head">
+   <nav className="story-breadcrumb" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><span aria-current="page">Your account</span></nav>
+   <p className="eyebrow">YOUR ACCOUNT</p>
+   <h1><span className="ed-line"><span>{welcome?'Welcome, ':'Hello, '}{first}.</span></span></h1>
+   <div className="story-hero-bottom ed-fade"><p>Signed in as {u.email}</p><form action={logout}><button className="text-link acc-out">Sign out ↗</button></form></div>
+  </section>
+  {welcome&&<Notice kind="ok">Your account is ready. Add the plants you own to get care reminders, and follow any bespoke projects here.</Notice>}
   {saved&&<Notice kind="ok">{saved==='pw'?'Password changed.':'Your details are saved.'}</Notice>}
   {e&&MSG[e]&&<Notice kind={MSG[e][1]}>{MSG[e][0]}</Notice>}
-  <div className="account-grid">
-   <section className="account-card account-orders"><h2>Your orders</h2>{connected?<p>Your recent orders will appear here.</p>:<><p>You haven’t placed an order on the new website yet.</p><p className="auth-small">Orders from our previous website aren’t shown here. Call <a href="tel:01661871481">01661 871481</a> if you need a copy.</p></>}<a className="pill" href="/shop">Browse the collection <span aria-hidden="true">↗</span></a></section>
-   <section className="account-card"><h2>Room Studio</h2><p>Plan your planting in 3D before you buy. Your arrangements are saved on this device.</p><a className="account-link-arrow" href="/studio">Open the Room Studio ↗</a></section>
-   <section className="account-card"><h2>Your details</h2><form action={updateProfile} className="auth-form compact">
-    <label htmlFor="name">Full name</label><input id="name" name="name" defaultValue={u.name} required/>
-    <label htmlFor="phone">Phone</label><input id="phone" name="phone" type="tel" defaultValue={full?.phone||''} autoComplete="tel"/>
-    <label htmlFor="company">Company (optional)</label><input id="company" name="company" defaultValue={full?.company||''} autoComplete="organization"/>
-    <label className="auth-check"><input type="checkbox" name="marketing" defaultChecked={full?.marketing==='yes'}/> Email me new arrivals and seasonal offers.</label>
-    <button className="pill auth-submit">Save details</button></form></section>
-   <section className="account-card"><h2>Password</h2><form action={changePassword} className="auth-form compact">
-    <label htmlFor="current">Current password</label><input id="current" name="current" type="password" autoComplete="current-password" required/>
-    <label htmlFor="password">New password</label><input id="password" name="password" type="password" minLength={10} autoComplete="new-password" required/>
-    <button className="pill auth-submit">Change password</button></form></section>
-   <section className="account-card account-help"><h2>Bespoke &amp; commercial</h2><p>Planning a hotel, office or restaurant scheme? Our team designs, supplies and installs.</p><a className="account-link-arrow" href="/bespoke-commercial">Start a project ↗</a></section>
-  </div>
+  <ul className="acc-attn">
+   <li className={due.length?'is-on':''}><a href="/account/plants"><b>{due.length}</b><span>{due.length===1?'plant is':'plants are'} due for care</span></a></li>
+   <li className={approvals?'is-on':''}><a href={projects[0]?'/account/projects/'+(projects.find(p=>pendingApprovals(p))||projects[0]).id+'#approvals':'/account'}><b>{approvals}</b><span>{approvals===1?'item needs':'items need'} your approval</span></a></li>
+   <li className={news?'is-on':''}><a href={projects[0]?'/account/projects/'+projects[0].id:'/account'}><b>{news}</b><span>new project {news===1?'update':'updates'}</span></a></li>
+  </ul>
+
+  <section className="acc-section"><div className="ed-section-head ed-head-row"><div><p className="eyebrow">01 / MY PLANTS</p><h2>Your greenery,<br/><em>cared for.</em></h2></div><a className="text-link" href="/account/plants">{plants.length?'See all & add plants ↗':'Add a plant ↗'}</a></div>
+   {plants.length?<div className="plant-minis">{byDue.slice(0,4).map(p=><PlantMini key={p.id} p={p}/>)}</div>
+   :<div className="acc-empty"><p className="intro-lead">Add the plants and trees you own and we’ll remind you when they’re due a refresh, with care tips for each one.</p><a className="pill" href="/account/plants#add">Add your first plant <span>↗</span></a></div>}
+  </section>
+
+  <section className="acc-section"><div className="ed-section-head ed-head-row"><div><p className="eyebrow">02 / BESPOKE PROJECTS</p><h2>Your projects,<br/><em>start to finish.</em></h2></div>{!projects.length&&<a className="text-link" href="/contact?topic=Bespoke%20installation">Start a project ↗</a>}</div>
+   {projects.length?<div className="acc-projects">{projects.map(p=>{const pa=pendingApprovals(p),nu=unreadForClient(p);return <a key={p.id} className="acc-project" href={'/account/projects/'+p.id}>
+    <span className="editorial-number">{p.ref}{p.site?' / '+p.site.toUpperCase():''}</span><b>{p.title}</b>
+    <span className="pj-mini" aria-label={'Stage: '+STAGES[p.stage]}>{STAGES.map((s,i)=><i key={s} className={i<p.stage?'done':i===p.stage?'now':''}/>)}</span>
+    <span className="acc-project-meta"><span>Now: {STAGES[p.stage]}</span>{pa>0&&<span className="care-badge care-due">{pa} to approve</span>}{nu>0&&<span className="care-badge care-soon">{nu} new</span>}</span>
+    <span className="text-link">Open project ↗</span></a>;})}</div>
+   :<div className="acc-empty"><p className="intro-lead">When we design and install planting for you, your project appears here: progress, proposals to approve, documents and messages in one place.</p></div>}
+  </section>
+
+  <section className="acc-section"><div className="ed-section-head"><p className="eyebrow">03 / ORDERS</p></div>
+   <div className="acc-orders">{connected?<p>Your recent orders will appear here.</p>:<><p>You haven’t placed an order on the new website yet. Orders from our previous website aren’t shown here; call <a href="tel:+441661871481">01661 871 481</a> for help with an earlier order.</p></>}<a className="text-link" href="/delivery-returns">Delivery &amp; returns ↗</a></div>
+  </section>
+
+  <section className="acc-section"><div className="ed-section-head"><p className="eyebrow">04 / YOUR DETAILS</p></div>
+   <div className="acc-forms">
+    <form action={updateProfile} className="auth-form compact"><h3>Contact details</h3>
+     <label htmlFor="name">Full name</label><input id="name" name="name" defaultValue={u.name} required/>
+     <label htmlFor="phone">Phone</label><input id="phone" name="phone" type="tel" defaultValue={full?.phone||''} autoComplete="tel"/>
+     <label htmlFor="company">Company (optional)</label><input id="company" name="company" defaultValue={full?.company||''} autoComplete="organization"/>
+     <label className="auth-check"><input type="checkbox" name="marketing" defaultChecked={full?.marketing==='yes'}/> Email me new arrivals and seasonal offers.</label>
+     <button className="pill auth-submit">Save details</button></form>
+    <form action={changePassword} className="auth-form compact"><h3>Password</h3>
+     <label htmlFor="current">Current password</label><input id="current" name="current" type="password" autoComplete="current-password" required/>
+     <label htmlFor="password">New password</label><input id="password" name="password" type="password" minLength={10} autoComplete="new-password" required/>
+     <button className="pill auth-submit">Change password</button></form>
+   </div>
+  </section>
+  <section className="ed-quick acc-quick"><a href="/studio"><span className="editorial-number">PLAN IN 3D</span><b>Room Studio</b><span className="text-link">Open ↗</span></a><a href="/gift-cards"><span className="editorial-number">GIFTING</span><b>Gift cards</b><span className="text-link">Design a card ↗</span></a><a href="/contact"><span className="editorial-number">HELP</span><b>Talk to the team</b><span className="text-link">Contact us ↗</span></a></section>
  </div></StoreShell>;
 }
