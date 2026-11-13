@@ -7,6 +7,8 @@ const back=(path:string,e:string,extra='')=>redirect(path+'?e='+e+extra);
 
 export async function register(fd:FormData){
  const name=String(fd.get('name')||'').trim().slice(0,80), email=normEmail(String(fd.get('email')||'')), pw=String(fd.get('password')||'');
+ if(String(fd.get('website')||''))back('/account/register','details'); // bots fill hidden fields
+ const t=Number(fd.get('t')||0);if(t&&Date.now()-t<2500)back('/account/register','slow'); // submitted inhumanly fast
  if(!name||!validEmail(email))back('/account/register','details');
  if(passwordProblem(pw))back('/account/register','password');
  if(await rateLimited('reg',email))back('/account/register','slow');
