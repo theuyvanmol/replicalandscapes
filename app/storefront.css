@@ -146,7 +146,7 @@
 /* ===== Homepage promotions band ===== */
 .promo-band{position:relative;overflow:hidden;isolation:isolate;--pb-bg:#203a2b;--pb-fg:#f4f1e6;--pb-acc:#c9d3a6;--pb-glow:#7f9a5b}
 .pb-slides{display:grid;grid-template-columns:minmax(0,1fr)}
-.pb-slide{grid-area:1/1;min-width:0;display:flex;flex-direction:column;position:relative;color:var(--pb-fg);background:var(--pb-bg);opacity:0;visibility:hidden;transition:opacity .9s ease,visibility 0s .9s}
+.pb-slide{grid-area:1/1;min-width:0;isolation:isolate;display:flex;flex-direction:column;position:relative;color:var(--pb-fg);background:var(--pb-bg);opacity:0;visibility:hidden;transition:opacity .9s ease,visibility 0s .9s}
 .pb-slide.is-active{opacity:1;visibility:visible;transition:opacity .9s ease}
 .pb-slide.theme-forest{--pb-bg:#203a2b;--pb-fg:#f4f1e6;--pb-acc:#c9d3a6;--pb-glow:#6f8d4c}
 .pb-slide.theme-midnight{--pb-bg:#121614;--pb-fg:#f4f1e6;--pb-acc:#d9b87a;--pb-glow:#40513f}
