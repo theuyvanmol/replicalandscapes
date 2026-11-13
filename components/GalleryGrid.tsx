@@ -11,13 +11,13 @@ export default function GalleryGrid({items,cats}:{items:GalleryImage[];cats:stri
  const choose=(c:string)=>{setCat(c);history.replaceState(null,'','/gallery'+(c?'?category='+encodeURIComponent(c):''));};
  const cur=open!==null?list[open]:null;
  return <>
-  <nav className="gl-filters" aria-label="Filter the gallery"><button type="button" aria-pressed={!cat} onClick={()=>choose('')}>All projects <sup>{items.length}</sup></button>{cats.map(c=><button type="button" key={c} aria-pressed={cat===c} onClick={()=>choose(c)}>{c} <sup>{items.filter(i=>i.category===c).length}</sup></button>)}</nav>
+  <nav className="ed-tabs" aria-label="Filter the gallery"><button type="button" aria-pressed={!cat} onClick={()=>choose('')}>All projects <sup>{items.length}</sup></button>{cats.map(c=><button type="button" key={c} aria-pressed={cat===c} onClick={()=>choose(c)}>{c} <sup>{items.filter(i=>i.category===c).length}</sup></button>)}</nav>
   <div className="gl-grid" ref={grid} key={cat}>{list.map((im,i)=><figure className="gl-item" key={im.slug} style={{'--i':i%6} as React.CSSProperties}>
    <button type="button" onClick={()=>setOpen(i)} aria-label={'Enlarge: '+im.title}><img src={`/gallery/img/${im.slug}-sm.webp`} srcSet={`/gallery/img/${im.slug}-sm.webp 800w, /gallery/img/${im.slug}.webp 1800w`} sizes="(max-width:600px) 100vw, (max-width:1100px) 50vw, 33vw" width={im.w} height={im.h} alt={im.alt} loading={i<6?'eager':'lazy'} decoding="async"/></button>
-   <figcaption><span>{im.category}</span>{im.title}</figcaption></figure>)}</div>
+   <figcaption><span>{String(i+1).padStart(2,'0')} / {im.category.toUpperCase()}</span>{im.title}</figcaption></figure>)}</div>
   <dialog ref={dlg} className="gl-box" aria-label="Photo viewer" onClose={()=>setOpen(null)} onClick={e=>{if(e.target===dlg.current)setOpen(null);}}>
-   {cur&&<><figure><img src={`/gallery/img/${cur.slug}.webp`} width={cur.w} height={cur.h} alt={cur.alt}/><figcaption><span>{cur.category} · {open!+1} of {list.length}</span><b>{cur.title}</b>{cur.alt}</figcaption></figure>
-   <button type="button" className="gl-x" onClick={()=>setOpen(null)} aria-label="Close">×</button>
+   {cur&&<><figure><img src={`/gallery/img/${cur.slug}.webp`} width={cur.w} height={cur.h} alt={cur.alt}/><figcaption><span>{String(open!+1).padStart(2,'0')} / {String(list.length).padStart(2,'0')} · {cur.category.toUpperCase()}</span><b>{cur.title}</b><em>{cur.alt}</em></figcaption></figure>
+   <button type="button" className="gl-x" onClick={()=>setOpen(null)} aria-label="Close">Close ×</button>
    <button type="button" className="gl-prev" onClick={()=>setOpen((open!-1+list.length)%list.length)} aria-label="Previous photo">‹</button>
    <button type="button" className="gl-next" onClick={()=>setOpen((open!+1)%list.length)} aria-label="Next photo">›</button></>}
   </dialog>

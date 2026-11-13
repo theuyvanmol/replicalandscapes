@@ -15,7 +15,6 @@ export default function GiftCard(){
  const today=new Date().toISOString().slice(0,10);
  return <div className="gc">
   <div className="gc-stage">
-   <div className="gc-dust" aria-hidden="true">{Array.from({length:18},(_,i)=><i key={i} style={{'--d':i} as React.CSSProperties}/>)}</div>
    <div ref={card} className={'gc-card fin-'+finish+(flip?' is-flipped':'')} onClick={()=>setFlip(f=>!f)} role="img" aria-label={`Replica Landscapes gift card for £${amount}${to?' to '+to:''}`}>
     <div className="gc-face gc-front">
      <span className="gc-sheen" aria-hidden="true"/><span className="gc-grain" aria-hidden="true"/>
@@ -31,17 +30,17 @@ export default function GiftCard(){
      <span className="gc-back-foot">replicalandscapes.co.uk · Valid for 2 years</span>
     </div>
    </div>
-   <p className="gc-hint">{flip?'Tap the card to see the front':'Tap the card to read your message'}</p>
+   <p className="gc-hint"><span className="gc-cap">YOUR GIFT CARD, PREVIEWED LIVE</span>{flip?'Tap the card to see the front':'Tap the card to read your message'}</p>
   </div>
   <form className="gc-form" onSubmit={e=>{e.preventDefault();setNote('Thank you. Gift cards go on sale when the new shop opens, very soon. Your design is ready to go.');}}>
-   <fieldset><legend><span>01</span>Choose an amount</legend>
+   <fieldset><legend><span>01 /</span>Choose an amount</legend>
     <div className="gc-amounts">{AMOUNTS.map(n=><button type="button" key={n} aria-pressed={amount===n&&!custom} onClick={()=>pick(n)}>£{n}</button>)}</div>
     <label className="gc-custom"><span>Or your own amount</span><span className="gc-pound">£<input inputMode="numeric" placeholder="10 – 1,000" value={custom} onChange={e=>{const v=e.target.value.replace(/\D/g,'').slice(0,4);setCustom(v);const n=Number(v);if(n>=10&&n<=1000){setAmount(n);setPulse(p=>p+1);}}}/></span></label>
    </fieldset>
-   <fieldset><legend><span>02</span>Choose a finish</legend>
+   <fieldset><legend><span>02 /</span>Choose a finish</legend>
     <div className="gc-finishes">{FINISHES.map(([k,l])=><label key={k} className={'sw-'+k}><input type="radio" name="finish" checked={finish===k} onChange={()=>{setFinish(k);setFlip(false);}}/><i/>{l}</label>)}</div>
    </fieldset>
-   <fieldset><legend><span>03</span>Make it personal</legend>
+   <fieldset><legend><span>03 /</span>Make it personal</legend>
     <div className="gc-row"><label>To<input value={to} maxLength={24} onChange={e=>setTo(e.target.value)} placeholder="Their name"/></label><label>From<input value={from} maxLength={24} onChange={e=>setFrom(e.target.value)} placeholder="Your name"/></label></div>
     <label>Message<textarea value={msg} maxLength={180} rows={3} onFocus={()=>setFlip(true)} onChange={e=>setMsg(e.target.value)} placeholder="Happy housewarming. Something green that never needs watering."/><small className="gc-left">{180-msg.length} characters left</small></label>
     <div className="gc-row"><label>Their email<input type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="name@example.com"/></label><label>Send on<input type="date" min={today} value={date} onChange={e=>setDate(e.target.value)}/></label></div>
