@@ -604,3 +604,4 @@
 
 /* ===== Store pages: full site footer ===== */
 .site-footer .visual-contact{margin-top:clamp(60px,8vw,110px)}
+.site-footer+footer{margin-top:0}.site-footer .visual-contact{margin-bottom:0}
