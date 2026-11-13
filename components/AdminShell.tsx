@@ -1,11 +1,11 @@
 import {staffLogout} from '@/app/admin/actions';import type {User} from '@/lib/auth';
-const NAV:[string,string,string[]?][]=[['/admin','Dashboard'],['/admin/products','Products'],['/admin/customers','Customers',['owner','admin']],['/admin/team','Team',['owner','admin']],['/admin/settings','Settings']];
-const SOON=['Orders','Homepage content','Collections','SEO & redirects'];
+const NAV:[string,string,string[]?][]=[['/admin','Dashboard'],['/admin/products','Products'],['/admin/promotions','Promotions & events'],['/admin/blog','Blog'],['/admin/customers','Customers',['owner','admin']],['/admin/team','Team',['owner','admin']],['/admin/settings','Settings']];
+const SOON=['Orders','Collections','Homepage content','SEO & redirects'];
 export default function AdminShell({user,active,title,eyebrow,actions,children}:{user:User;active:string;title:string;eyebrow?:string;actions?:React.ReactNode;children:React.ReactNode}){
  return <div className="adm">
   <aside className="adm-side" aria-label="Admin navigation">
    <a className="adm-logo" href="/admin"><img src="/assets/replica-landscapes-heritage-transparent.png" alt="Replica Landscapes"/><span>Admin</span></a>
-   <nav>{NAV.filter(([, ,r])=>!r||r.includes(user.role)).map(([h,l])=><a key={h} href={h} aria-current={active===h?'page':undefined}>{l}</a>)}</nav>
+   <nav>{NAV.filter(([, ,r])=>!r||r.includes(user.role)).map(([h,l])=><a key={h} href={h} aria-current={active===h||(h!=='/admin'&&active.startsWith(h))?'page':undefined}>{l}</a>)}</nav>
    <p className="adm-soon-h">Coming next</p><ul className="adm-soon">{SOON.map(s=><li key={s}>{s}</li>)}</ul>
    <div className="adm-me"><b>{user.name}</b><span>{user.role.charAt(0).toUpperCase()+user.role.slice(1)} · {user.email}</span><div className="adm-me-actions"><a href="/" target="_blank" rel="noopener">View website ↗</a><form action={staffLogout}><button>Sign out</button></form></div></div>
   </aside>
