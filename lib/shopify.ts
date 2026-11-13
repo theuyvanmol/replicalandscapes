@@ -2,7 +2,7 @@ import 'server-only';
 import fs from 'node:fs';
 import path from 'node:path';
 let cached:any[]|null=null;
-function catalogue():any[]{if(!cached)cached=JSON.parse(fs.readFileSync(path.join(process.cwd(),'lib','catalogue.json'),'utf8')).products as any[];return cached;}
+function catalogue():any[]{if(!cached){const all=JSON.parse(fs.readFileSync(path.join(process.cwd(),'lib','catalogue.json'),'utf8')).products as any[];const keep=new Set<string>((JSON.parse(fs.readFileSync(path.join(process.cwd(),'lib','keep-list.json'),'utf8')).keep as number[]).map(String));cached=all.filter(p=>keep.has(String(p.id)));}return cached;}
 export type Product={id:string;handle:string;title:string;description:string;images:{url:string;altText:string|null;cutout?:boolean}[];price:string|null;currency:string;category:string;search?:string;variants:{id:string;title:string;availableForSale:boolean;price:{amount:string;currencyCode:string}}[]};
 export const connected=Boolean(process.env.SHOPIFY_STORE_DOMAIN&&process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN);
 export async function graphql<T>(query:string,variables:Record<string,unknown>={}):Promise<T>{
