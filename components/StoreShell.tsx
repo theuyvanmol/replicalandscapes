@@ -9,4 +9,5 @@ export default function StoreShell({children}:{children:React.ReactNode}){return
  <Script src="/design/shop-menu.js" strategy="afterInteractive"/>
  <Script src="/design/store-header.js" strategy="afterInteractive"/>
  <Script src="/design/commerce-bridge.js" strategy="afterInteractive"/>
+ <Script src="/design/reveal.js" strategy="afterInteractive"/>
 </div>}
