@@ -8,7 +8,7 @@
  if(reduce||!('IntersectionObserver' in window)){all.forEach(e=>e.classList.add('rv-in'));return;}
  // a fully clipped element is never reported as visible, so wipes are watched through their parent
  const proxy=new Map();
- const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){(proxy.get(e.target)||[e.target]).forEach(t=>t.classList.add('rv-in'));io.unobserve(e.target);}}),{rootMargin:'0px 0px -10% 0px',threshold:.05});
+ const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){[e.target,...(proxy.get(e.target)||[])].forEach(t=>t.classList.add('rv-in'));io.unobserve(e.target);}}),{rootMargin:'0px 0px -10% 0px',threshold:.05});
  all.forEach(e=>{if(e.classList.contains('rv-wipe')&&e.parentElement){const p=e.parentElement;proxy.set(p,[...(proxy.get(p)||[]),e]);io.observe(p);}else io.observe(e);});
  requestAnimationFrame(()=>document.querySelectorAll('.in-hero,.gl-hero').forEach(h=>h.classList.add('is-on')));
  const px=[...document.querySelectorAll('[data-parallax]')];if(!px.length)return;let tick=false;
