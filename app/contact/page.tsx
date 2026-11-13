@@ -25,7 +25,7 @@ export default async function Contact({searchParams}:{searchParams:Promise<{sent
       {e&&ERR[e]&&<p className="ed-err" role="alert">{ERR[e]}</p>}
       <fieldset className="ed-topics"><legend>What is it about?</legend>{TOPICS.map(t=><label key={t}><input type="radio" name="topic" value={t} defaultChecked={t===pick}/><span>{t}</span></label>)}</fieldset>
       <div className="ed-row"><label>Your name<input name="name" required autoComplete="name"/></label><label>Email<input name="email" type="email" required autoComplete="email"/></label></div>
-      <label>Phone <span>Optional</span><input name="phone" type="tel" autoComplete="tel"/></label>
+      <label>Phone (optional)<input name="phone" type="tel" autoComplete="tel"/></label>
       <label>Message<textarea name="message" rows={6} required placeholder="Tell us about your space, the products you’re interested in or your order number."/></label>
       <label className="ed-hp" aria-hidden="true">Website<input name="website" tabIndex={-1} autoComplete="off"/></label>
       <input type="hidden" name="from" value="/contact"/>

@@ -513,3 +513,4 @@
 .ed-steps-section>div:first-child,.ed-faq>div:first-child{position:sticky;top:140px;align-self:start}
 @media(max-width:600px){.ed-steps-section>div:first-child,.ed-faq>div:first-child{position:static}}
 .store-active:has(.ed-page) .site-footer .visual-contact{margin-top:20px}
+.ed-page .gc-hint{font-size:8.5px;line-height:1.8}
