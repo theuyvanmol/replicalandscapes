@@ -44,18 +44,12 @@ export default function Catalogue({items,initialCategory='',initialQuery='',init
  if(sort==='high')list=[...list].sort((a,b)=>Number(b.price??-1)-Number(a.price??-1));
  if(sort==='name')list=[...list].sort((a,b)=>a.title.localeCompare(b.title));
  const pages=Math.ceil(list.length/PAGE);
- useEffect(()=>{const q=new URLSearchParams();if(category)q.set('category',category);if(type)q.set('type',type);if(query)q.set('q',query);if(height)q.set('height',height);if(place)q.set('use',place);if(fr)q.set('fr','1');if(price)q.set('price',price);const qs=q.toString();history.replaceState(null,'','/shop'+(qs?'?'+qs:''));},[category,type,query,height,place,fr,price]);
  useEffect(()=>{const q=new URLSearchParams(location.search);const h=q.get('height');if(h&&HEIGHTS.some(x=>x[0]===h))setHeight(h);if(q.get('use')==='outdoor')setPlace('outdoor');if(q.get('fr')==='1')setFr(true);const pr=q.get('price');if(pr&&PRICES.some(x=>x[0]===pr))setPrice(pr);},[]);
+ useEffect(()=>{const q=new URLSearchParams();if(category)q.set('category',category);if(type)q.set('type',type);if(query)q.set('q',query);if(height)q.set('height',height);if(place)q.set('use',place);if(fr)q.set('fr','1');if(price)q.set('price',price);const qs=q.toString();history.replaceState(null,'','/shop'+(qs?'?'+qs:''));},[category,type,query,height,place,fr,price]);
  useEffect(()=>{if(location.hash==='#search')document.getElementById('search')?.focus();},[]);
  const pick=(c:string,t='')=>{setCategory(c);setType(t);setPage(1);dialog.current?.close();};
  const heading=type?type.charAt(0).toUpperCase()+type.slice(1):category||'The collection';
  const filters=<aside className="shop-filters" aria-label="Shop by category">
-  <h2>Shop by category</h2>
-  <button type="button" className={'category-all'+(!category?' selected':'')} onClick={()=>pick('')}>Shop all</button>
-  {categories.map(c=><details key={c} open={category===c}><summary>{c}</summary>
-   <button type="button" className={'category-option'+(category===c&&!type?' selected':'')} onClick={()=>pick(c)}>All {c.toLowerCase()}</button>
-   {subtypes[c]?.map(([l])=><button type="button" key={l} className={'category-option'+(category===c&&type===l?' selected':'')} onClick={()=>pick(c,l)}>{l}</button>)}
-  </details>)}
   <div className="refine">
    <h2>Refine</h2>
    <fieldset><legend>Height</legend>{HEIGHTS.map(([l])=>{const n=nH(l);return <label key={l} className={n?'':'is-empty'}><input type="radio" name="h" checked={height===l} onChange={()=>{setHeight(height===l?'':l);setPage(1);}} onClick={()=>{if(height===l){setHeight('');setPage(1);}}}/><span>{l}</span><sup>{n}</sup></label>;})}</fieldset>
@@ -63,6 +57,12 @@ export default function Catalogue({items,initialCategory='',initialQuery='',init
    <fieldset><legend>Commercial spaces</legend><label className={nFr?'':'is-empty'}><input type="checkbox" checked={fr} onChange={e=>{setFr(e.target.checked);setPage(1);}}/><span>Fire-retardant</span><sup>{nFr}</sup></label></fieldset>
    <fieldset><legend>Price</legend>{PRICES.map(([l])=>{const n=nP(l);return <label key={l} className={n?'':'is-empty'}><input type="radio" name="p" checked={price===l} onChange={()=>{setPrice(l);setPage(1);}} onClick={()=>{if(price===l){setPrice('');setPage(1);}}}/><span>{l}</span><sup>{n}</sup></label>;})}</fieldset>
   </div>
+  <h2 className="cat-h">Shop by category</h2>
+  <button type="button" className={'category-all'+(!category?' selected':'')} onClick={()=>pick('')}>Shop all</button>
+  {categories.map(c=><details key={c} open={category===c}><summary>{c}</summary>
+   <button type="button" className={'category-option'+(category===c&&!type?' selected':'')} onClick={()=>pick(c)}>All {c.toLowerCase()}</button>
+   {subtypes[c]?.map(([l])=><button type="button" key={l} className={'category-option'+(category===c&&type===l?' selected':'')} onClick={()=>pick(c,l)}>{l}</button>)}
+  </details>)}
   {(category||type||query||refined)&&<button type="button" className="clear-filters" onClick={()=>{pick('');setQuery('');setDraft('');clearRefine();}}>Clear all filters</button>}
  </aside>;
  return <>

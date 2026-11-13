@@ -587,3 +587,5 @@ html body .pb-count small,html body .pb-count-l,html body .pb-track{font-size:10
 html body .pb-text{font-size:14.5px}
 html body footer,html body .visual-contact p,html body .visual-contact a{font-size:12.5px}
 @media(max-width:600px){html body .our-story-page p,html body .expertise-grid p{font-size:15px}}
+.shop-filters .refine{border-top:0;margin:0 0 18px;padding-top:0}
+.shop-filters .cat-h{margin-top:4px}
