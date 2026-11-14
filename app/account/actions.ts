@@ -1,6 +1,7 @@
 'use server';
 import {redirect} from 'next/navigation';
 import {kv} from '@/lib/kv';
+import {sendVerification} from '@/lib/auth-flows';
 import {normEmail,validEmail,hashPassword,checkPassword,passwordProblem,startSession,endSession,getUser,rateLimited,requireCustomer} from '@/lib/auth';
 
 const back=(path:string,e:string,extra='')=>redirect(path+'?e='+e+extra);
@@ -15,6 +16,7 @@ export async function register(fd:FormData){
  const exists=await getUser(email);if(exists)back('/account/login','exists');
  await kv('HSET','user:'+email,'email',email,'name',name,'role','customer','pw',hashPassword(pw),'created',new Date().toISOString(),'sv','0','marketing',fd.get('marketing')?'yes':'no');
  await kv('SADD','users:customers',email);
+ await sendVerification(email).catch(()=>false);
  await startSession('customer',{email,role:'customer'});
  redirect('/account?welcome=1');
 }

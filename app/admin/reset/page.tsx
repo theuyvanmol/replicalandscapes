@@ -1,0 +1,4 @@
+import AdminAuth from '@/components/AdminAuth';import {ResetForm} from '@/components/ResetForms';import {peekToken} from '@/lib/security';import {getUser,STAFF} from '@/lib/auth';
+export const metadata={title:'Choose a new password',robots:{index:false,follow:false}};export const dynamic='force-dynamic';
+export default async function Reset({searchParams}:{searchParams:Promise<{t?:string;e?:string}>}){const {t='',e}=await searchParams;const email=e==='expired'?null:await peekToken('reset',t);const u=email?await getUser(email):null;const ok=u&&STAFF.includes(u.role);
+ return <AdminAuth title={<>Choose a<br/><em>new password.</em></>} lead={ok?'For '+email+'.':'This link has expired or has already been used.'}>{ok?<ResetForm team t={t} e={e} needCode={u!.tfa==='on'}/>:<a className="pill" href="/admin/forgot">Send a new link <span>↗</span></a>}</AdminAuth>;}

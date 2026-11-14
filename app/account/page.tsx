@@ -1,10 +1,11 @@
-import StoreShell from '@/components/StoreShell';import {Notice} from '@/components/AuthLayout';import {requireCustomer} from '@/lib/auth';import {getUser} from '@/lib/auth';import {logout,updateProfile,changePassword} from '@/app/account/actions';import {connected} from '@/lib/shopify';import {listPlants,careStatus,listProjects,pendingApprovals,unreadForClient,STAGES} from '@/lib/portal';import {PlantMini} from '@/components/PlantCard';import {legacyOrders,money} from '@/lib/legacy';
+import StoreShell from '@/components/StoreShell';import {Notice} from '@/components/AuthLayout';import {requireCustomer} from '@/lib/auth';import {getUser} from '@/lib/auth';import {logout,updateProfile,changePassword} from '@/app/account/actions';import {connected} from '@/lib/shopify';import {listPlants,careStatus,listProjects,pendingApprovals,unreadForClient,STAGES} from '@/lib/portal';import {PlantMini} from '@/components/PlantCard';import {legacyOrders,money} from '@/lib/legacy';import {kv} from '@/lib/kv';import {resendVerification} from '@/app/auth-actions';import {emailReady} from '@/lib/email';
 export const metadata={title:'Your account',robots:{index:false,follow:false}};export const dynamic='force-dynamic';
 const MSG:Record<string,[string,'ok'|'error']>={name:['Please add your name.','error'],current:['Your current password isn’t right.','error'],password:['Your new password needs at least 10 characters.','error']};
 export default async function Account({searchParams}:{searchParams:Promise<{e?:string;saved?:string;welcome?:string}>}){
  const u=await requireCustomer();const full=await getUser(u.email) as Record<string,string>|null;const {e,saved,welcome}=await searchParams;
  const first=u.name.split(' ')[0];
  const [plants,projects,past]=await Promise.all([listPlants(u.email).catch(()=>[]),listProjects(u.email).catch(()=>[]),legacyOrders(u.email).then(l=>l.filter(o=>!/failed|incomplete|pending/i.test(o.state)))]);
+ const verified=full?.verified==='yes';const hiddenPast=verified?0:Number(await kv('HGET','legacy:oc',u.email).catch(()=>0))||0;const pastShown=verified?past:[];
  const fd=(x:string)=>new Date(x.replace(' ','T')).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
  const due=plants.filter(p=>p.reminders&&careStatus(p).state==='due');const approvals=projects.reduce((n,p)=>n+pendingApprovals(p),0);const news=projects.reduce((n,p)=>n+unreadForClient(p),0);
  const byDue=[...plants].sort((a,b)=>careStatus(a).days-careStatus(b).days);
@@ -16,7 +17,7 @@ export default async function Account({searchParams}:{searchParams:Promise<{e?:s
    <div className="story-hero-bottom ed-fade"><p>Signed in as {u.email}</p><form action={logout}><button className="text-link acc-out">Sign out ↗</button></form></div>
   </section>
   {welcome&&<Notice kind="ok">Your account is ready. Add the plants you own to get care reminders, and follow any bespoke projects here.</Notice>}
-  {saved&&<Notice kind="ok">{saved==='pw'?'Password changed.':'Your details are saved.'}</Notice>}
+  {saved&&<Notice kind={saved==='verifyfail'?'error':'ok'}>{({pw:'Password changed.',reset:'Your new password is saved and you’re signed in.',verified:'Thanks, your email is confirmed. Your previous orders are below.',verify:'Confirmation link sent. Check your inbox.',verifyfail:'That confirmation link has expired. Send a new one from the Orders section.'} as Record<string,string>)[saved]||'Your details are saved.'}</Notice>}
   {e&&MSG[e]&&<Notice kind={MSG[e][1]}>{MSG[e][0]}</Notice>}
   <ul className="acc-attn">
    <li className={due.length?'is-on':''}><a href="/account/plants"><b>{due.length}</b><span>{due.length===1?'plant is':'plants are'} due for care</span></a></li>
@@ -39,7 +40,7 @@ export default async function Account({searchParams}:{searchParams:Promise<{e?:s
   </section>
 
   <section className="acc-section"><div className="ed-section-head"><p className="eyebrow">03 / ORDERS</p></div>
-   <div className="acc-orders">{past.length?<><p>Your previous orders with us, including those from artificialplants.co.uk and replicaplants.co.uk.</p><div className="acc-legacy">{past.slice(0,30).map(o=><details key={o.site+o.ref}><summary><b>{fd(o.date)}</b><span>{o.ref} · {o.state}</span><span>{money(o.total)}</span></summary><ul>{o.items.map((i,k)=><li key={k}>{i.q} × {i.n}</li>)}</ul><a className="text-link acc-again" href={'/shop?q='+encodeURIComponent((o.items[0]?.n||'').split(' ').slice(0,3).join(' '))}>Find these again ↗</a></details>)}</div></>:<p>You haven’t placed an order on the new website yet. For help with an earlier order call <a href="tel:+441661871481">01661 871 481</a>.</p>}<a className="text-link" href="/delivery-returns">Delivery &amp; returns ↗</a></div>
+   <div className="acc-orders">{pastShown.length?<><p>Your previous orders with us, including those from artificialplants.co.uk and replicaplants.co.uk.</p><div className="acc-legacy">{pastShown.slice(0,30).map(o=><details key={o.site+o.ref}><summary><b>{fd(o.date)}</b><span>{o.ref} · {o.state}</span><span>{money(o.total)}</span></summary><ul>{o.items.map((i,k)=><li key={k}>{i.q} × {i.n}</li>)}</ul><a className="text-link acc-again" href={'/shop?q='+encodeURIComponent((o.items[0]?.n||'').split(' ').slice(0,3).join(' '))}>Find these again ↗</a></details>)}</div></>:hiddenPast>0?<div className="acc-verify"><p>We found <b>{hiddenPast} {hiddenPast===1?'order':'orders'}</b> from our previous website for this email. To keep them private, please confirm the email address is yours.</p>{emailReady?<form action={resendVerification}><button className="pill">Email me a confirmation link <span>↗</span></button></form>:<p className="auth-small">Call <a href="tel:+441661871481">01661 871 481</a> and we’ll link them for you.</p>}</div>:<p>You haven’t placed an order on the new website yet. For help with an earlier order call <a href="tel:+441661871481">01661 871 481</a>.</p>}<a className="text-link" href="/delivery-returns">Delivery &amp; returns ↗</a></div>
   </section>
 
   <section className="acc-section"><div className="ed-section-head"><p className="eyebrow">04 / YOUR DETAILS</p></div>

@@ -11,7 +11,7 @@ export default async function Login({searchParams}:{searchParams:Promise<{e?:str
    <button className="pill auth-submit">Sign in <span aria-hidden="true">↗</span></button>
   </form>
   <p className="auth-alt">New to Replica Landscapes? <a href="/account/register">Create an account ↗</a></p>
-  <p className="auth-small">Forgotten your password? Call <a href="tel:01661871481">01661 871481</a> and we’ll reset it for you.</p>
+  <p className="auth-small"><a href="/account/forgot">Forgotten your password?</a> Shopped with our previous website? <a href="/account/forgot">Set a password here</a> using the same email.</p>
   <p className="auth-small auth-staff"><a href="/admin/login">Team sign-in</a></p>
  </AuthLayout>;
 }

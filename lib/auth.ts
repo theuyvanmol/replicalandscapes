@@ -5,7 +5,8 @@ import {redirect} from 'next/navigation';
 import {kv,hgetall,kvReady} from '@/lib/kv';
 
 export type Role='customer'|'owner'|'admin'|'editor';
-export type User={email:string;name:string;role:Role;created:string;phone?:string;company?:string;lastLogin?:string};
+export type User={email:string;name:string;role:Role;created:string;phone?:string;company?:string;lastLogin?:string;tfa?:string;verified?:string};
+type Secret={pw?:string;sv?:string;tfaSecret?:string;tfaStep?:string;tfaBackup?:string;tfaPending?:string};
 export const STAFF:Role[]=['owner','admin','editor'];
 export const CUSTOMER_COOKIE='rl_account', STAFF_COOKIE='rl_admin';
 const DAY=86400;
@@ -18,8 +19,8 @@ export function hashPassword(pw:string){const salt=randomBytes(16);const h=scryp
 export function checkPassword(pw:string,stored:string){try{const [,s,h]=stored.split('$');const want=Buffer.from(h,'base64');const got=scryptSync(pw,Buffer.from(s,'base64'),want.length,{N:16384,r:8,p:1});return timingSafeEqual(want,got);}catch{return false;}}
 export const passwordProblem=(pw:string)=>pw.length<10?'Use at least 10 characters.':pw.length>200?'That password is too long.':null;
 
-function sign(payload:object){const body=Buffer.from(JSON.stringify(payload)).toString('base64url');const mac=createHmac('sha256',secret()).update(body).digest('base64url');return body+'.'+mac;}
-function verify<T>(token?:string):T|null{if(!token)return null;const [body,mac]=token.split('.');if(!body||!mac)return null;const want=createHmac('sha256',secret()).update(body).digest('base64url');if(want.length!==mac.length||!timingSafeEqual(Buffer.from(want),Buffer.from(mac)))return null;try{const p=JSON.parse(Buffer.from(body,'base64url').toString());return p.exp>Date.now()/1000?p as T:null;}catch{return null;}}
+export function sign(payload:object){const body=Buffer.from(JSON.stringify(payload)).toString('base64url');const mac=createHmac('sha256',secret()).update(body).digest('base64url');return body+'.'+mac;}
+export function verify<T>(token?:string):T|null{if(!token)return null;const [body,mac]=token.split('.');if(!body||!mac)return null;const want=createHmac('sha256',secret()).update(body).digest('base64url');if(want.length!==mac.length||!timingSafeEqual(Buffer.from(want),Buffer.from(mac)))return null;try{const p=JSON.parse(Buffer.from(body,'base64url').toString());return p.exp>Date.now()/1000?p as T:null;}catch{return null;}}
 
 type Session={e:string;r:Role;v:number;exp:number};
 export async function startSession(kind:'customer'|'staff',u:{email:string;role:Role}){
@@ -29,13 +30,13 @@ export async function startSession(kind:'customer'|'staff',u:{email:string;role:
 }
 export async function endSession(kind:'customer'|'staff'){(await cookies()).delete(kind==='staff'?STAFF_COOKIE:CUSTOMER_COOKIE);}
 
-export async function getUser(email:string):Promise<(User&{pw?:string;sv?:string})|null>{const h=await hgetall('user:'+email);return h.email?(h as unknown as User&{pw?:string;sv?:string}):null;}
+export async function getUser(email:string):Promise<(User&Secret)|null>{const h=await hgetall('user:'+email);return h.email?(h as unknown as User&Secret):null;}
 async function current(kind:'customer'|'staff'){
  if(!kvReady)return null;
  const s=verify<Session>((await cookies()).get(kind==='staff'?STAFF_COOKIE:CUSTOMER_COOKIE)?.value);if(!s)return null;
  const u=await getUser(s.e);if(!u||(Number(u.sv)||0)!==s.v)return null;
  if(kind==='staff'&&!STAFF.includes(u.role))return null;
- const {pw,sv,...safe}=u;void pw;void sv;return safe as User;
+ const {pw,sv,tfaSecret,tfaStep,tfaBackup,tfaPending,...safe}=u;void pw;void sv;void tfaSecret;void tfaStep;void tfaBackup;void tfaPending;return safe as User;
 }
 export const currentCustomer=()=>current('customer');
 export const currentStaff=()=>current('staff');

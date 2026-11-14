@@ -1,4 +1,4 @@
-import AdminShell from '@/components/AdminShell';import {requireStaff,normEmail} from '@/lib/auth';import {kv,hgetall} from '@/lib/kv';import {legacyCustomer,legacyOrders,legacySub,legacyCounts,money} from '@/lib/legacy';
+import AdminShell from '@/components/AdminShell';import {requireStaff,normEmail} from '@/lib/auth';import {kv,hgetall} from '@/lib/kv';import {markVerified} from '@/app/auth-actions';import {legacyCustomer,legacyOrders,legacySub,legacyCounts,money} from '@/lib/legacy';
 export const metadata={title:'Customers · Admin',robots:{index:false,follow:false}};export const dynamic='force-dynamic';
 const d=(s?:string)=>s?new Date(s.replace(' ','T')).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}):'–';
 export default async function Customers({searchParams}:{searchParams:Promise<{q?:string}>}){
@@ -13,8 +13,9 @@ export default async function Customers({searchParams}:{searchParams:Promise<{q?
   {email&&<section className="adm-card"><h2>{lc?(lc.f+' '+lc.l).trim()||email:acct.name||email}</h2>
    {!lc&&!acct.email&&!lo.length&&!ls?<p className="adm-muted">No customer found with that email.</p>:<>
    <p>{email}{lc?.ph?' · '+lc.ph:''}{lc?.mob&&lc.mob!==lc.ph?' · '+lc.mob:''}{lc?.co?' · '+lc.co:''}</p>
+   {acct.email&&acct.verified!=='yes'&&<form action={markVerified}><input type="hidden" name="email" value={email}/><button className="adm-btn ghost">Confirm their email (after checking on the phone)</button></form>}
    {lc&&<p className="adm-muted">{[lc.a1,lc.a2,lc.town,lc.county,lc.pc,lc.country].filter(Boolean).join(', ')}</p>}
-   <p className="adm-muted">{acct.email?'Has an account on the new website (joined '+d(acct.created)+'). ':'No account on the new website yet. '}{lc?'Old website customer since '+d(lc.reg)+' ('+lc.site+'). ':''}Email marketing: {lc?.eo||(ls?.active&&!ls.unsub)?'subscribed':'not subscribed'}.</p>
+   <p className="adm-muted">{acct.email?'Has an account on the new website (joined '+d(acct.created)+', email '+(acct.verified==='yes'?'confirmed':'not confirmed yet')+'). ':'No account on the new website yet. '}{lc?'Old website customer since '+d(lc.reg)+' ('+lc.site+'). ':''}Email marketing: {lc?.eo||(ls?.active&&!ls.unsub)?'subscribed':'not subscribed'}.</p>
    {lo.length>0&&<><h3>{lo.length} previous {lo.length===1?'order':'orders'} · {money(spent)}</h3><div className="lg-orders">{lo.map(o=><div className="lg-order" key={o.site+o.ref}><header><b>{o.ref}</b><span>{d(o.date)}</span><span>{o.state}</span><span>{o.site}</span><b>{money(o.total)}</b></header><ul>{o.items.map((i,k)=><li key={k}>{i.q} × {i.n}{i.sku?' ('+i.sku+')':''} · {money(i.p)}</li>)}</ul></div>)}</div></>}
    </>}</section>}
   {people.length?<div className="adm-table-wrap"><table className="adm-table"><thead><tr><th>Name</th><th>Email</th><th>Company</th><th>Joined</th><th>Last sign-in</th><th>Emails</th><th></th></tr></thead><tbody>

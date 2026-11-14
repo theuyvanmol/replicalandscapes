@@ -2,6 +2,7 @@
 import {redirect} from 'next/navigation';
 import {createHash} from 'node:crypto';
 import {kv} from '@/lib/kv';
+import {beginTwoStep} from '@/lib/auth-flows';
 import {normEmail,validEmail,hashPassword,checkPassword,passwordProblem,startSession,endSession,getUser,rateLimited,requireStaff,audit,STAFF,type Role} from '@/lib/auth';
 
 // One-time code to create the first owner account. Only works while no staff exist.
@@ -24,9 +25,11 @@ export async function staffLogin(fd:FormData){
  if(await rateLimited('staff',email))redirect('/admin/login?e=slow');
  const u=await getUser(email);
  if(!u||!u.pw||!STAFF.includes(u.role)||!checkPassword(pw,u.pw)){await audit(email||'unknown','Failed staff sign-in');redirect('/admin/login?e=wrong');}
+ if(u!.tfa==='on')await beginTwoStep(email);
  await kv('HSET','user:'+email,'lastLogin',new Date().toISOString());
  await startSession('staff',{email,role:u!.role});
  await audit(email,'Signed in');
+ if(await kv('GET','settings:require2fa')==='yes')redirect('/admin/security?e=required');
  redirect('/admin');
 }
 export async function staffLogout(){await endSession('staff');redirect('/admin/login?e=out');}
