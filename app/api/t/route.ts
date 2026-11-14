@@ -9,5 +9,7 @@ export async function POST(req:Request){
  if(!/^[a-z0-9]{12,40}$/.test(v)||!p.startsWith('/')||/^\/(admin|api|old-url)/.test(p))return new Response(null,{status:204});
  let r='';try{if(b.r){const h=new URL(String(b.r)).hostname.replace(/^www\./,'');if(h&&h!==new URL(req.url).hostname)r=h.slice(0,60);}}catch{}
  const cc=(req.headers.get('x-vercel-ip-country')||'').slice(0,2).toUpperCase();
- try{await trackHit({v,p,r,cc,mobile:/mobile|android|iphone/i.test(ua),beat:!!b.beat});}catch{}
+ const num=(h:string,max:number)=>{const n=Number(req.headers.get(h));return Number.isFinite(n)&&Math.abs(n)<=max&&req.headers.get(h)?Math.round(n*10)/10:undefined;};/* city-level only */
+ let city='';try{city=decodeURIComponent(req.headers.get('x-vercel-ip-city')||'').slice(0,40);}catch{}
+ try{await trackHit({v,p,r,cc,mobile:/mobile|android|iphone/i.test(ua),beat:!!b.beat,lat:num('x-vercel-ip-latitude',90),lon:num('x-vercel-ip-longitude',180),city});}catch{}
  return new Response(null,{status:204});}

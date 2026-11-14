@@ -14,7 +14,7 @@ export default async function Dashboard({searchParams}:{searchParams:Promise<{we
  const tasks=Object.keys(tasksRaw).length, cats=new Set(items.map(p=>p.category)).size;
  const stats:[string,string,string][]=[['Products live',String(items.length),cats+' categories'],['Customers',String(customers),'registered accounts'],['Keep List',dec.keep+' keep',dec.maybe+' maybe · '+dec.remove+' remove'],['Launch plan',Math.round(tasks/90*100)+'%',tasks+' of 90 tasks done']];
  const first=u.name.split(' ')[0];
- const [sales,detail,site,live,today]=await Promise.all([adminReady?salesSummary().catch(()=>null):null,adminReady?salesDetail(days).catch(()=>null):null,siteStats(days).catch(()=>null),liveNow().catch(()=>({count:0,pages:[],countries:[]})),siteStats(1).catch(()=>null)]);
+ const [sales,detail,site,live,today]=await Promise.all([adminReady?salesSummary().catch(()=>null):null,adminReady?salesDetail(days).catch(()=>null):null,siteStats(days).catch(()=>null),liveNow().catch(()=>({count:0,pages:[],countries:[],points:[]})),siteStats(1).catch(()=>null)]);
  const visitors=site?.visitors||0;const ord=detail?.orders||0;
  const salesSeries=(site?.series||[]).map(x=>({d:x.d,v:detail?.byDay.get(x.d)?.t||0}));const visitSeries=(site?.series||[]).map(x=>({d:x.d,v:x.uv}));
  const funnel:[string,number][]=[['Visitors',visitors],['Viewed a product',site?.pdp||0],['Added to basket',site?.atc||0],['Went to checkout',site?.checkout||0],['Ordered',ord]];
@@ -23,7 +23,7 @@ export default async function Dashboard({searchParams}:{searchParams:Promise<{we
  return <AdminShell user={u} active="/admin" eyebrow={new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'})} title={(welcome?'Welcome, ':'Good to see you, ')+first+'.'}>
   {welcome&&<AdmNotice>Your owner account is ready. Add the rest of the team from the Team page.</AdmNotice>}
   {e==='role'&&<AdmNotice kind="error">Your role doesn’t include that page. Ask the owner if you need access.</AdmNotice>}
-  <LiveNow initial={{live,today:{visitors:today?.visitors||0,pv:today?.pv||0,atc:today?.atc||0,checkout:today?.checkout||0}}}/>
+  <LiveNow orders={detail?.places||[]} initial={{live,today:{visitors:today?.visitors||0,pv:today?.pv||0,atc:today?.atc||0,checkout:today?.checkout||0}}}/>
   <div className="dash-bar"><h2>Performance, {period}</h2><nav className="dash-tabs" aria-label="Period">{[['1','Today'],['7','7 days'],['30','30 days']].map(([k,l])=><a key={k} href={'/admin?r='+k} aria-current={String(days)===k?'page':undefined}>{l}</a>)}</nav></div>
   <div className="adm-stats adm-sales">
    <div className="adm-stat"><small>Sales</small><b>{detail?money(detail.total):'–'}</b><span>{detail?fmt(ord)+' orders':'connect Shopify admin'}</span></div>
