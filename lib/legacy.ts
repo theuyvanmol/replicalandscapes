@@ -41,6 +41,10 @@ export async function importBatch(kind:string,items:any[]):Promise<{saved:number
   groups.forEach((g,i)=>{const prev:LegacyOrder[]=existing[i]?JSON.parse(String(existing[i])):[];const m=new Map(prev.map(o=>[o.site+':'+o.ref,o]));g.orders.forEach((o:LegacyOrder)=>m.set(o.site+':'+o.ref,o));
    const all=[...m.values()].sort((a,b)=>b.date.localeCompare(a.date));cmds.push(['SET','legacy:o:'+g.e,JSON.stringify(all)]);oc.push(g.e,String(all.length));saved+=g.orders.length;});
   if(oc.length)cmds.push(['HSET','legacy:oc',...oc]);}
+ else if(kind==='files'){/* small documents from the old downloads library, base64, up to ~1.5MB each */
+  for(const x of items){const slug=s(x.slug,80).toLowerCase().replace(/[^a-z0-9._-]+/g,'-');const data=String(x.data||'');const type=s(x.type,60);
+   if(!slug||!/^[A-Za-z0-9+/=]+$/.test(data)||data.length>2_100_000||!/^(application\/pdf|image\/(jpeg|png|webp))$/.test(type)){skipped++;continue;}
+   cmds.push(['SET','legacy:f:'+slug,data]);cmds.push(['HSET','legacy:files',slug,JSON.stringify({name:s(x.name,120),type,size:Math.round(data.length*0.75),date:s(x.date,20)})]);saved++;}}
  else throw new Error('Unknown kind');
  for(let i=0;i<cmds.length;i+=200)await kvPipe(cmds.slice(i,i+200));
  return {saved,skipped};
@@ -52,4 +56,5 @@ export async function legacyCustomer(email:string):Promise<LegacyCustomer|null>{
 export async function legacySub(email:string):Promise<LegacySub|null>{try{const v=await kv<string|null>('HGET','legacy:s',email.toLowerCase());return v?JSON.parse(v):null;}catch{return null;}}
 /** Walk a whole hash in pages (for CSV exports). */
 export async function* scanHash(key:string){let cur='0';do{const [next,arr]=await kv<[string,string[]]>('HSCAN',key,cur,'COUNT',1000);cur=next;for(let i=0;i<arr.length;i+=2)yield [arr[i],arr[i+1]] as [string,string];}while(cur!=='0');}
+export async function legacyFiles():Promise<{slug:string;name:string;type:string;size:number;date:string}[]>{try{const a=await kv<string[]>('HGETALL','legacy:files')||[];const o=[];for(let i=0;i<a.length;i+=2)o.push({slug:a[i],...JSON.parse(a[i+1])});return o;}catch{return [];}}
 export const money=(v:number)=>'£'+v.toFixed(2);

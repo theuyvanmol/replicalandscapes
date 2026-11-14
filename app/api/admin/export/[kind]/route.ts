@@ -6,9 +6,10 @@ const COUNTRY:[RegExp,string][]=[[/^UK|United Kingdom|Great Britain|England|Scot
 const cc=(c:string)=>c.match(/Jersey/i)?'JE':c.match(/Guernsey/i)?'GG':(COUNTRY.find(([r])=>r.test(c))||[,''])[1];
 const q=(v:unknown)=>{const t=String(v??'');return /[",\n\r]/.test(t)||/^[=+\-@]/.test(t)?'"'+(/^[=+\-@]/.test(t)?"'":'')+t.replace(/"/g,'""')+'"':t;};
 const row=(a:unknown[])=>a.map(q).join(',')+'\r\n';
-export async function GET(_req:Request,{params}:{params:Promise<{kind:string}>}){
+export async function GET(req:Request,{params}:{params:Promise<{kind:string}>}){
  const u=await currentStaff();if(!u||!['owner','admin'].includes(u.role))return new Response('Not allowed',{status:403});
  const {kind}=await params;let out='';let name='';
+ if(kind==='file'){const f=new URL(req.url).searchParams.get('f')||'';const meta=await kv<string|null>('HGET','legacy:files',f);const data=meta&&await kv<string|null>('GET','legacy:f:'+f);if(!meta||!data)return new Response('Not found',{status:404});const m=JSON.parse(meta);return new Response(Buffer.from(data,'base64'),{headers:{'content-type':m.type,'content-disposition':'attachment; filename="'+f+'"','Cache-Control':'private, no-store'}});}
  if(kind==='shopify-customers'){name='shopify-customers-import.csv';
   out+=row(['First Name','Last Name','Email','Accepts Email Marketing','Default Address Company','Default Address Address1','Default Address Address2','Default Address City','Default Address Province Code','Default Address Country Code','Default Address Zip','Default Address Phone','Phone','Accepts SMS Marketing','Tags','Note','Tax Exempt']);
   const subs=new Map<string,LegacySub>();for await(const [e,v] of scanHash('legacy:s'))subs.set(e,JSON.parse(v));

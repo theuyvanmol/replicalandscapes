@@ -8,7 +8,7 @@ export async function POST(req:Request){
  const o=req.headers.get('origin');const h=cors(o);
  if(o&&!ORIGINS.includes(o)&&new URL(o).host!==new URL(req.url).host)return Response.json({error:'Origin not allowed'},{status:403,headers:h});
  if(!(await checkImportKey(req.headers.get('x-import-key')||'')))return Response.json({error:'Import key missing or expired. Create a new one in Admin → Data import.'},{status:401,headers:h});
- const len=Number(req.headers.get('content-length')||0);if(len>4_000_000)return Response.json({error:'Batch too large'},{status:413,headers:h});
+ const len=Number(req.headers.get('content-length')||0);if(len>6_000_000)return Response.json({error:'Batch too large'},{status:413,headers:h});
  const body=await req.json().catch(()=>null);if(!body||!Array.isArray(body.items)||body.items.length>2000)return Response.json({error:'Send up to 2,000 items per batch'},{status:400,headers:h});
  try{const r=await importBatch(String(body.kind),body.items);return Response.json({ok:true,...r},{headers:h});}
  catch(e){return Response.json({error:(e as Error).message},{status:400,headers:h});}
