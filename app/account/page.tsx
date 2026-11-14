@@ -4,7 +4,7 @@ const MSG:Record<string,[string,'ok'|'error']>={name:['Please add your name.','e
 export default async function Account({searchParams}:{searchParams:Promise<{e?:string;saved?:string;welcome?:string}>}){
  const u=await requireCustomer();const full=await getUser(u.email) as Record<string,string>|null;const {e,saved,welcome}=await searchParams;
  const first=u.name.split(' ')[0];
- const [plants,projects,past]=await Promise.all([listPlants(u.email).catch(()=>[]),listProjects(u.email).catch(()=>[]),legacyOrders(u.email)]);
+ const [plants,projects,past]=await Promise.all([listPlants(u.email).catch(()=>[]),listProjects(u.email).catch(()=>[]),legacyOrders(u.email).then(l=>l.filter(o=>!/failed|incomplete|pending/i.test(o.state)))]);
  const fd=(x:string)=>new Date(x.replace(' ','T')).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
  const due=plants.filter(p=>p.reminders&&careStatus(p).state==='due');const approvals=projects.reduce((n,p)=>n+pendingApprovals(p),0);const news=projects.reduce((n,p)=>n+unreadForClient(p),0);
  const byDue=[...plants].sort((a,b)=>careStatus(a).days-careStatus(b).days);
