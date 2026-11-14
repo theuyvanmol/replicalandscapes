@@ -1,5 +1,5 @@
 import {currentStaff,audit} from '@/lib/auth';
-import {scanHash,type LegacyCustomer,type LegacySub,type LegacyEnquiry} from '@/lib/legacy';
+import {checkImportKey,scanHash,type LegacyCustomer,type LegacySub,type LegacyEnquiry} from '@/lib/legacy';
 import {kv} from '@/lib/kv';
 /* Owner-only CSV downloads of the data carried over from Visualsoft. */
 const COUNTRY:[RegExp,string][]=[[/^UK|United Kingdom|Great Britain|England|Scotland|Wales/i,'GB'],[/Ireland/i,'IE'],[/^USA|United States/i,'US'],[/Canada/i,'CA'],[/Australia/i,'AU'],[/Germany/i,'DE'],[/France/i,'FR'],[/Spain/i,'ES'],[/Netherlands|Holland/i,'NL'],[/Belgium/i,'BE'],[/Denmark/i,'DK'],[/Sweden/i,'SE'],[/Norway/i,'NO'],[/Italy/i,'IT'],[/Switzerland/i,'CH'],[/New Zealand/i,'NZ'],[/Malta/i,'MT'],[/Cyprus/i,'CY'],[/Portugal/i,'PT'],[/Austria/i,'AT'],[/Poland/i,'PL'],[/Isle of Man/i,'IM']];
@@ -7,7 +7,10 @@ const cc=(c:string)=>c.match(/Jersey/i)?'JE':c.match(/Guernsey/i)?'GG':(COUNTRY.
 const q=(v:unknown)=>{const t=String(v??'');return /[",\n\r]/.test(t)||/^[=+\-@]/.test(t)?'"'+(/^[=+\-@]/.test(t)?"'":'')+t.replace(/"/g,'""')+'"':t;};
 const row=(a:unknown[])=>a.map(q).join(',')+'\r\n';
 export async function GET(req:Request,{params}:{params:Promise<{kind:string}>}){
- const u=await currentStaff();if(!u||!['owner','admin'].includes(u.role))return new Response('Not allowed',{status:403});
+ /* Signed-in owners, or (for the Shopify customer import only) the temporary import key from Shopify's own admin page. */
+ const shop=req.headers.get('origin')==='https://admin.shopify.com';const cors:Record<string,string>=shop?{'Access-Control-Allow-Origin':'https://admin.shopify.com','Vary':'Origin'}:{};
+ let u=await currentStaff();if(!u&&shop&&(await params).kind==='shopify-customers'&&await checkImportKey(req.headers.get('x-import-key')||''))u={email:'import-key',name:'Import',role:'owner',created:''};
+ if(!u||!['owner','admin'].includes(u.role))return new Response('Not allowed',{status:403,headers:cors});
  const {kind}=await params;let out='';let name='';
  if(kind==='file'){const f=new URL(req.url).searchParams.get('f')||'';const meta=await kv<string|null>('HGET','legacy:files',f);const data=meta&&await kv<string|null>('GET','legacy:f:'+f);if(!meta||!data)return new Response('Not found',{status:404});const m=JSON.parse(meta);return new Response(Buffer.from(data,'base64'),{headers:{'content-type':m.type,'content-disposition':'attachment; filename="'+f+'"','Cache-Control':'private, no-store'}});}
  if(kind==='shopify-customers'){name='shopify-customers-import.csv';
@@ -25,5 +28,6 @@ export async function GET(req:Request,{params}:{params:Promise<{kind:string}>}){
   for await(const [e] of scanHash('legacy:oc')){const v=await kv<string|null>('GET','legacy:o:'+e);if(!v)continue;for(const o of JSON.parse(v))out+=row([o.date,o.site,o.ref,e,o.state,o.total,o.ship,o.disc,o.pay||'',o.items.map((i:any)=>i.q+' x '+i.n).join(' | ')]);}
  }else return new Response('Unknown export',{status:404});
  await audit(u.email,'Downloaded export',kind);
- return new Response('﻿'+out,{headers:{'content-type':'text/csv; charset=utf-8','content-disposition':'attachment; filename="'+name+'"','Cache-Control':'private, no-store'}});
+ return new Response('﻿'+out,{headers:{'content-type':'text/csv; charset=utf-8','content-disposition':'attachment; filename="'+name+'"','Cache-Control':'private, no-store',...cors}});
 }
+export async function OPTIONS(req:Request){const ok=req.headers.get('origin')==='https://admin.shopify.com';return new Response(null,{status:204,headers:ok?{'Access-Control-Allow-Origin':'https://admin.shopify.com','Access-Control-Allow-Methods':'GET','Access-Control-Allow-Headers':'x-import-key','Vary':'Origin'}:{}});}
