@@ -818,3 +818,12 @@ html body footer,html body .visual-contact p,html body .visual-contact a{font-si
 @media(max-width:700px){.tfa-setup{grid-template-columns:1fr}.tfa-qr{max-width:240px}}
 .adm-tfa-nudge{display:block;margin:-6px 0 18px;padding:10px 16px;border-radius:10px;background:#fbf3e3;color:#6b4a14;font-size:13px;text-decoration:none;border:1px solid #ecd9b0}.adm-tfa-nudge:hover{background:#f7ead0}
 .acc-verify{border:1px solid var(--line);border-radius:4px 4px 50px 4px;padding:20px 24px;margin-bottom:16px;background:#f3f1ea}.acc-verify p{margin:0 0 14px}
+/* ---------- Collection landing pages ---------- */
+.coll-head{padding:clamp(28px,5vw,60px) 0 clamp(20px,3vw,34px)}
+.coll-head h1{font-family:var(--serif);font-weight:400;font-size:clamp(44px,6.6vw,96px);line-height:.97;letter-spacing:-.03em;margin:12px 0 0}.coll-head h1 em{font-style:italic;color:var(--sage)}
+.coll-intro{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:clamp(20px,4vw,60px);margin-top:26px;max-width:1100px}.coll-intro p{margin:0;font-size:15px;line-height:1.7}.coll-intro .intro-lead{font-size:clamp(17px,1.5vw,20px);line-height:1.55}
+.coll-links{display:flex;flex-wrap:wrap;gap:8px;margin-top:26px}.coll-links a{border:1px solid #22382c33;border-radius:99px;padding:8px 16px;font-size:13px;text-decoration:none;color:var(--ink)}.coll-links a:hover{background:var(--ink);color:#f4f1e8}
+.coll-faq{margin-top:clamp(40px,6vw,80px)}
+.coll-index{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:34px 40px;padding-bottom:60px}.coll-index section{border-top:1px solid var(--line);padding-top:18px}.coll-index h2{font-family:var(--serif);font-weight:400;font-size:26px;margin:0 0 8px}.coll-index h2 a{color:var(--ink);text-decoration:none}.coll-index p{font-size:13px;line-height:1.6;color:#22382cb0;margin:0 0 10px}.coll-index ul{list-style:none;padding:0;margin:0;display:grid;gap:4px;font-size:14px}
+@media(max-width:760px){.coll-intro{grid-template-columns:1fr}}
+.shop-colls{margin:24px 0 0}

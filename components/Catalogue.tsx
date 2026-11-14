@@ -25,8 +25,8 @@ const hay=(p:Product)=>(p.title+' '+p.description).toLowerCase();
 const matchType=(p:Product,type:string)=>{const ts=terms(type);const h=hay(p);return ts.some(t=>new RegExp('\\b'+t.replace(/[.*+?^${}()[\]\\]/g,'\\$&')).test(h));};
 const fmt=(v:string|null,c:string)=>v===null?null:new Intl.NumberFormat('en-GB',{style:'currency',currency:c}).format(Number(v));
 
-export default function Catalogue({items,initialCategory='',initialQuery='',initialType=''}:{items:Product[];initialCategory?:string;initialQuery?:string;initialType?:string}){
- const [height,setHeight]=useState(''),[place,setPlace]=useState(''),[fr,setFr]=useState(false),[price,setPrice]=useState('');
+export default function Catalogue({items,initialCategory='',initialQuery='',initialType='',initialPlace='',initialFr=false,basePath='/shop'}:{items:Product[];initialCategory?:string;initialQuery?:string;initialType?:string;initialPlace?:string;initialFr?:boolean;basePath?:string}){
+ const [height,setHeight]=useState(''),[place,setPlace]=useState(initialPlace),[fr,setFr]=useState(initialFr),[price,setPrice]=useState('');
  const [category,setCategory]=useState(initialCategory),[type,setType]=useState(initialType),[query,setQuery]=useState(initialQuery),[draft,setDraft]=useState(initialQuery),[sort,setSort]=useState('featured'),[page,setPage]=useState(1);
  const dialog=useRef<HTMLDialogElement>(null),top=useRef<HTMLDivElement>(null);
  const categories=useMemo(()=>{const c=new Map<string,number>();items.forEach(p=>c.set(p.category,(c.get(p.category)||0)+1));const rank=(x:string)=>{const i=ORDER.indexOf(x);return i<0?99:i;};return [...c.keys()].sort((a,b)=>rank(a)-rank(b));},[items]);
@@ -45,7 +45,7 @@ export default function Catalogue({items,initialCategory='',initialQuery='',init
  if(sort==='name')list=[...list].sort((a,b)=>a.title.localeCompare(b.title));
  const pages=Math.ceil(list.length/PAGE);
  useEffect(()=>{const q=new URLSearchParams(location.search);const h=q.get('height');if(h&&HEIGHTS.some(x=>x[0]===h))setHeight(h);if(q.get('use')==='outdoor')setPlace('outdoor');if(q.get('fr')==='1')setFr(true);const pr=q.get('price');if(pr&&PRICES.some(x=>x[0]===pr))setPrice(pr);},[]);
- useEffect(()=>{const q=new URLSearchParams();if(category)q.set('category',category);if(type)q.set('type',type);if(query)q.set('q',query);if(height)q.set('height',height);if(place)q.set('use',place);if(fr)q.set('fr','1');if(price)q.set('price',price);const qs=q.toString();history.replaceState(null,'','/shop'+(qs?'?'+qs:''));},[category,type,query,height,place,fr,price]);
+ useEffect(()=>{const q=new URLSearchParams();if(category)q.set('category',category);if(type)q.set('type',type);if(query)q.set('q',query);if(height)q.set('height',height);if(place)q.set('use',place);if(fr)q.set('fr','1');if(price)q.set('price',price);const qs=q.toString();const atStart=category===initialCategory&&type===initialType&&!query&&!height&&place===initialPlace&&fr===initialFr&&!price;history.replaceState(null,'',basePath!=='/shop'&&atStart?basePath:'/shop'+(qs?'?'+qs:''));},[category,type,query,height,place,fr,price]);
  useEffect(()=>{if(location.hash==='#search')document.getElementById('search')?.focus();},[]);
  const pick=(c:string,t='')=>{setCategory(c);setType(t);setPage(1);dialog.current?.close();};
  const heading=type?type.charAt(0).toUpperCase()+type.slice(1):category||'The collection';

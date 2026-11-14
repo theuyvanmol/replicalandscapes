@@ -1,0 +1,5 @@
+import StoreShell from '@/components/StoreShell';import {COLLECTIONS} from '@/lib/collections';
+export const metadata={title:'Shop by collection',description:'Browse artificial trees, plants, topiary, flowers, hedging, living walls and planters by collection.',alternates:{canonical:'/collections'}};
+export default function Collections(){const top=COLLECTIONS.filter(c=>!c.parent);
+ return <StoreShell><div className="coll"><section className="coll-head"><nav className="story-breadcrumb" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><span aria-current="page">Collections</span></nav><p className="eyebrow">SHOP BY COLLECTION</p><h1>Every <em>collection.</em></h1></section>
+  <div className="coll-index">{top.map(c=><section key={c.slug}><h2><a href={'/collections/'+c.slug}>{c.title}</a></h2><p>{c.description}</p><ul>{COLLECTIONS.filter(x=>x.parent===c.slug).map(x=><li key={x.slug}><a href={'/collections/'+x.slug}>{x.title}</a></li>)}</ul></section>)}</div></div></StoreShell>;}
