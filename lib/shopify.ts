@@ -12,7 +12,7 @@ export const connected=Boolean(process.env.SHOPIFY_STORE_DOMAIN&&process.env.SHO
 export async function graphql<T>(query:string,variables:Record<string,unknown>={}):Promise<T>{
  const domain=process.env.SHOPIFY_STORE_DOMAIN!;
  if(!/^[a-zA-Z0-9-]+\.myshopify\.com$/.test(domain))throw new Error('Set a valid Shopify store domain.');
- const r=await fetch(`https://${domain}/api/${process.env.SHOPIFY_STOREFRONT_API_VERSION||'2026-10'}/graphql.json`,{method:'POST',headers:{'Content-Type':'application/json','X-Shopify-Storefront-Access-Token':process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN!},body:JSON.stringify({query,variables}),cache:'no-store'});
+ const r=await fetch(`https://${domain}/api/${process.env.SHOPIFY_STOREFRONT_API_VERSION||'2026-10'}/graphql.json`,{method:'POST',headers:{'Content-Type':'application/json','X-Shopify-Storefront-Access-Token':process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN!},body:JSON.stringify({query,variables}),...(/^\s*mutation|cart\s*\(/.test(query)?{cache:'no-store' as const}:{next:{revalidate:120,tags:['shopify']}})});
  const data=await r.json();if(!r.ok||data.errors)throw new Error('Shopify request failed. Check store configuration.');return data.data;
 }
 const fields=`id handle title description productType tags availableForSale images(first:12){nodes{url altText}} priceRange{minVariantPrice{amount currencyCode}} variants(first:100){nodes{id title availableForSale price{amount currencyCode}}}`;
@@ -20,10 +20,12 @@ const fields=`id handle title description productType tags availableForSale imag
 let cutouts:Set<string>|null=null;
 function isCutout(handle:string){if(!cutouts){try{cutouts=new Set(catalogue().filter((c:any)=>c.images?.[0]?.cutout).map((c:any)=>c.handle));}catch{cutouts=new Set();}}return cutouts.has(handle);}
 function map(p:any):Product{return {...p,category:p.productType,images:p.images.nodes.map((im:any,i:number)=>i===0&&isCutout(p.handle)?{...im,cutout:true}:im),variants:p.variants.nodes,price:p.priceRange.minVariantPrice.amount,currency:p.priceRange.minVariantPrice.currencyCode,facets:tagged(facets(p.title,p.description||'',p.variants.nodes.map((v:any)=>v.title)),p.tags||[])};}
+let memo:{at:number;list:Product[]}|null=null;
 export async function products():Promise<Product[]>{
+ if(connected&&memo&&Date.now()-memo.at<60_000)return memo.list;
  if(!connected)return catalogue().map((p:any)=>({id:'vs-'+p.id,handle:p.handle,title:p.title,description:p.description||'Full product details will follow when the Shopify catalogue is connected.',images:p.images.map((im:any)=>typeof im==='string'?{url:im,altText:p.title}:{url:im.url,altText:p.title,cutout:!!im.cutout}),price:p.price===null?null:String(p.price),currency:'GBP',category:p.category,search:p.search,variants:p.variants.map((v:any)=>({id:v.id,title:v.title,availableForSale:true,price:{amount:String(v.price??p.price??0),currencyCode:'GBP'}})),facets:facets(p.title,p.description||'',p.variants.map((v:any)=>v.title))}));
  let list:Product[]=[];let after:string|null=null;
- for(let page=0;page<50;page++){const data: any=await graphql(`query($after:String){products(first:100,after:$after){nodes{${fields}} pageInfo{hasNextPage endCursor}}}`,{after});list.push(...data.products.nodes.map(map));if(!data.products.pageInfo.hasNextPage)return list;after=data.products.pageInfo.endCursor;}
+ for(let page=0;page<50;page++){const data: any=await graphql(`query($after:String){products(first:100,after:$after){nodes{${fields}} pageInfo{hasNextPage endCursor}}}`,{after});list.push(...data.products.nodes.map(map));if(!data.products.pageInfo.hasNextPage){memo={at:Date.now(),list};return list;}after=data.products.pageInfo.endCursor;}
  throw new Error('Catalogue exceeded pagination limit. Increase the limit or use collection pagination.');
 }
 export async function product(handle:string):Promise<Product|null>{if(!connected)return (await products()).find(p=>p.handle===handle)||null;const d:any=await graphql(`query($handle:String!){product(handle:$handle){${fields}}}`,{handle});return d.product?map(d.product):null;}
