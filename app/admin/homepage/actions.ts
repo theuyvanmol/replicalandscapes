@@ -11,4 +11,4 @@ export async function saveHomePicks(fd:FormData){const u=await requireStaff(['ow
  const best=read('best'),arrivals=read('arrivals');
  await kv('SET','home:best',JSON.stringify(best));await kv('SET','home:arrivals',JSON.stringify(arrivals));
  let note='';if(adminReady){try{await setBestSellers(best);await setNewArrivals(arrivals);}catch(e){note=String((e as Error).message).slice(0,200);}}
- await audit(u.email,'homepage.products',`${best.length} best sellers, ${arrivals.length} new arrivals`);revalidatePath('/');const {revalidateTag}=await import('next/cache');revalidateTag('shopify');redirect('/admin/homepage?saved=1'+(note?'&e='+encodeURIComponent(note):''));}
+ await audit(u.email,'homepage.products',`${best.length} best sellers, ${arrivals.length} new arrivals`);revalidatePath('/');const {revalidateTag}=await import('next/cache');revalidateTag('shopify','max');redirect('/admin/homepage?saved=1'+(note?'&e='+encodeURIComponent(note):''));}

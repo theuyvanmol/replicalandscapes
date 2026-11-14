@@ -20,7 +20,7 @@ export async function saveProductAction(fd:FormData){const u=await requireStaff(
  const variants=fd.getAll('variant').map(String).filter(v=>/^gid:\/\/shopify\/ProductVariant\/\d+$/.test(v)).map(v=>{const k=v.split('/').pop();const price=str(fd,'price_'+k,12);const cmp=str(fd,'compare_'+k,12);return {id:v,price:/^\d+(\.\d{1,2})?$/.test(price)?price:'',compareAtPrice:/^\d+(\.\d{1,2})?$/.test(cmp)&&Number(cmp)>Number(price)?cmp:null};}).filter(v=>v.price);
  const status=['ACTIVE','DRAFT','ARCHIVED'].includes(str(fd,'status',10))?str(fd,'status',10):'ACTIVE';
  try{await updateAdminProduct(id,{title:str(fd,'title',255),descriptionHtml,status,tags,productType:str(fd,'productType',80),seoTitle:str(fd,'seoTitle',70),seoDescription:str(fd,'seoDescription',320)},variants);await audit(u.email,'product.update',str(fd,'title',120));}catch(e){redirect(`/admin/products/${n}?e=${err(e)}`);}
- revalidateTag('shopify');revalidatePath('/shop');redirect(`/admin/products/${n}?saved=1`);}
+ revalidateTag('shopify','max');revalidatePath('/shop');redirect(`/admin/products/${n}?saved=1`);}
 export async function createDiscountAction(fd:FormData){const u=await requireStaff(['owner','admin']);
  const code=str(fd,'code',40).toUpperCase().replace(/[^A-Z0-9_-]/g,'');const value=Number(str(fd,'value',8));const kind=str(fd,'kind',10)==='amount'?'amount':'percent';
  if(!code||!(value>0)||(kind==='percent'&&value>100))redirect('/admin/discounts?e='+encodeURIComponent('Add a code and a valid amount.'));
