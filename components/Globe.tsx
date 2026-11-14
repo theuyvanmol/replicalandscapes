@@ -4,10 +4,10 @@ import {LAND} from '@/lib/land';
 /* A slowly turning dotted globe: green pulses are people on the site now, gold dots are where orders were sent.
    Drag to spin it. Drawn on a canvas with no external libraries. */
 export type Pt={lat:number;lon:number;city:string;cc:string;n:number;t?:number};
-const DOTS:[number,number][]=(()=>{const out:[number,number][]=[];LAND.split('|').forEach((row,y)=>{const lat=90-(y*2+1);row.split(' ').filter(Boolean).forEach(run=>{const [s,l]=run.split('.').map(Number);for(let x=s;x<s+l;x++)out.push([lat,-180+x*2+1]);});});return out;})();
+const DOTS:[number,number][]=(()=>{const out:[number,number][]=[];LAND.split('|').forEach((row,y)=>{const lat=90-(y*2+1);if(lat<-62)return;row.split(' ').filter(Boolean).forEach(run=>{const [s,l]=run.split('.').map(Number);for(let x=s;x<s+l;x++)out.push([lat,-180+x*2+1]);});});return out;})();
 const R=Math.PI/180;
 export default function Globe({live,orders,focus}:{live:Pt[];orders:Pt[];focus?:[number,number]}){
- const cv=useRef<HTMLCanvasElement>(null);const st=useRef({rot:-(focus?.[1]??-2),tilt:-(focus?.[0]??30)*0.6,drag:null as null|{x:number;y:number;rot:number;tilt:number},live,orders,hover:null as null|Pt});
+ const cv=useRef<HTMLCanvasElement>(null);const st=useRef({rot:-(focus?.[1]??-2),tilt:(focus?.[0]??30)*0.55,drag:null as null|{x:number;y:number;rot:number;tilt:number},live,orders,hover:null as null|Pt});
  st.current.live=live;st.current.orders=orders;
  useEffect(()=>{const c=cv.current!;const g=c.getContext('2d')!;let raf=0,last=performance.now();const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
   const size=()=>{const r=c.getBoundingClientRect(),d=Math.min(2,devicePixelRatio||1);c.width=r.width*d;c.height=r.height*d;g.setTransform(d,0,0,d,0,0);};size();const ro=new ResizeObserver(size);ro.observe(c);

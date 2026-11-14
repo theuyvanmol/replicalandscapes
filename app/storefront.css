@@ -862,3 +862,4 @@ html body footer,html body .visual-contact p,html body .visual-contact a{font-si
 .em-inbox{background:#fff;border-radius:10px;padding:10px 14px;margin-bottom:10px;font-size:13px;display:grid;gap:2px}.em-inbox span{color:#22382c99;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .em-preview iframe{width:100%;height:78vh;border:0;border-radius:10px;background:#f1efe7;display:block;margin:0 auto;transition:width .3s}.em-preview iframe.is-mobile{width:375px;max-width:100%}
 @media(max-width:1200px){.em{grid-template-columns:1fr}.em-preview{position:static}}
+.adm-stats.adm-sales{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
