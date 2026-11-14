@@ -74,3 +74,11 @@ export async function createDiscount(x:{auto?:boolean;title:string;code:string;k
  let d:any;try{d=await run({context:{all:'ALL'}});}catch(e){if(/context/i.test(String((e as Error).message)))d=await run({customerSelection:{all:true}});else throw e;}
  userErrors(d.discountCodeBasicCreate);}
 export async function setDiscountActive(id:string,active:boolean){const auto=/DiscountAutomaticNode/.test(id);const m=auto?(active?'discountAutomaticActivate':'discountAutomaticDeactivate'):(active?'discountCodeActivate':'discountCodeDeactivate');const d=await admin(`mutation($id:ID!){${m}(id:$id){userErrors{field message}}}`,{id});userErrors(d[m]);}
+/** Orders for the last `days` days: daily revenue, order count, average order and best sellers. */
+export async function salesDetail(days:number){
+ const since=new Date(Date.now()-days*864e5).toISOString().slice(0,10);
+ const d=await admin(`query($q:String!){orders(first:250,sortKey:CREATED_AT,reverse:true,query:$q){nodes{createdAt cancelledAt totalPriceSet{${M}} lineItems(first:20){nodes{title quantity}}}}}`,{q:`created_at:>=${since}`});
+ const rows=d.orders.nodes.filter((o:any)=>!o.cancelledAt);const byDay=new Map<string,{t:number;n:number}>();const best=new Map<string,number>();
+ for(const o of rows){const k=o.createdAt.slice(0,10);const v=byDay.get(k)||{t:0,n:0};v.t+=Number(o.totalPriceSet.shopMoney.amount);v.n++;byDay.set(k,v);for(const li of o.lineItems.nodes)best.set(li.title,(best.get(li.title)||0)+li.quantity);}
+ const total=rows.reduce((t:number,o:any)=>t+Number(o.totalPriceSet.shopMoney.amount),0);
+ return {byDay,total,orders:rows.length,aov:rows.length?total/rows.length:0,best:[...best].sort((a,b)=>b[1]-a[1]).slice(0,6)};}

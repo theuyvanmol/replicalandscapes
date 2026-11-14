@@ -1,5 +1,5 @@
 import {cookies} from 'next/headers';
-import {connected,graphql,cartFields,getCart} from '@/lib/shopify';
+import {connected,graphql,cartFields,getCart} from '@/lib/shopify';import {trackEvent} from '@/lib/analytics';
 /* Used by the homepage product panels: add to the Shopify basket and read the basket count. */
 const no={'Cache-Control':'no-store'};
 export async function GET(){if(!connected)return Response.json({connected:false,count:0},{headers:no});
@@ -14,5 +14,6 @@ export async function POST(req:Request){
  const lines=[{merchandiseId,quantity}];
  const d:any=id?await graphql(`mutation($cartId:ID!,$lines:[CartLineInput!]!){cartLinesAdd(cartId:$cartId,lines:$lines){cart{${cartFields}} userErrors{message}}}`,{cartId:id,lines}):await graphql(`mutation($input:CartInput!){cartCreate(input:$input){cart{${cartFields}} userErrors{message}}}`,{input:{lines}});
  const payload=d.cartLinesAdd||d.cartCreate;if(payload.userErrors?.length)return Response.json({error:payload.userErrors.map((e:any)=>e.message).join(' ')},{status:400,headers:no});
+ await trackEvent('atc');
  jar.set('replica-cart',payload.cart.id,{httpOnly:true,secure:true,sameSite:'lax',path:'/',maxAge:60*60*24*10});
  return Response.json({ok:true,count:payload.cart.totalQuantity},{headers:no});}
