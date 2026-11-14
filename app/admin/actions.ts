@@ -36,8 +36,8 @@ export async function staffLogout(){await endSession('staff');redirect('/admin/l
 export async function addStaff(fd:FormData){
  const me=await requireStaff(['owner','admin']);
  const name=String(fd.get('name')||'').trim().slice(0,80), email=normEmail(String(fd.get('email')||'')), pw=String(fd.get('password')||''), role=String(fd.get('role')||'editor') as Role;
- if(!name||!validEmail(email)||!['admin','editor'].includes(role))redirect('/admin/team?e=details');
- if(role==='admin'&&me.role!=='owner')redirect('/admin/team?e=role');
+ if(!name||!validEmail(email)||!['owner','admin','editor'].includes(role))redirect('/admin/team?e=details');
+ if((role==='admin'||role==='owner')&&me.role!=='owner')redirect('/admin/team?e=role');
  if(passwordProblem(pw))redirect('/admin/team?e=password');
  const ex=await getUser(email);if(ex&&STAFF.includes(ex.role))redirect('/admin/team?e=exists');
  await kv('HSET','user:'+email,'email',email,'name',name,'role',role,'pw',hashPassword(pw),'created',new Date().toISOString(),'sv','0');

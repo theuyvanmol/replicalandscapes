@@ -14,7 +14,7 @@ export default async function Team({searchParams}:{searchParams:Promise<{e?:stri
    <section className="adm-card"><h2>Add a team member</h2><form action={addStaff} className="auth-form compact">
     <label htmlFor="name">Name</label><input id="name" name="name" required/>
     <label htmlFor="email">Work email</label><input id="email" name="email" type="email" required/>
-    <label htmlFor="role">Role</label><select id="role" name="role" defaultValue="editor"><option value="editor">Editor</option>{u.role==='owner'&&<option value="admin">Admin</option>}</select>
+    <label htmlFor="role">Role</label><select id="role" name="role" defaultValue="editor"><option value="editor">Editor</option>{u.role==='owner'&&<option value="admin">Admin</option>}{u.role==='owner'&&<option value="owner">Owner (full access, like you)</option>}</select>
     <label htmlFor="password">Temporary password</label><input id="password" name="password" type="text" minLength={10} autoComplete="off" required/><span className="auth-hint">At least 10 characters. They change it after signing in.</span>
     <button className="pill auth-submit">Add to team</button></form></section>
    <section className="adm-card"><h2>Roles</h2><ul className="adm-roles">{Object.entries(ROLE).map(([k,v])=><li key={k}><span className={'adm-role r-'+k}>{k}</span>{v.split(': ')[1]}</li>)}</ul></section>
