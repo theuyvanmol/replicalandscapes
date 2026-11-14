@@ -1,10 +1,11 @@
-import StoreShell from '@/components/StoreShell';import {Notice} from '@/components/AuthLayout';import {requireCustomer} from '@/lib/auth';import {getUser} from '@/lib/auth';import {logout,updateProfile,changePassword} from '@/app/account/actions';import {connected} from '@/lib/shopify';import {listPlants,careStatus,listProjects,pendingApprovals,unreadForClient,STAGES} from '@/lib/portal';import {PlantMini} from '@/components/PlantCard';
+import StoreShell from '@/components/StoreShell';import {Notice} from '@/components/AuthLayout';import {requireCustomer} from '@/lib/auth';import {getUser} from '@/lib/auth';import {logout,updateProfile,changePassword} from '@/app/account/actions';import {connected} from '@/lib/shopify';import {listPlants,careStatus,listProjects,pendingApprovals,unreadForClient,STAGES} from '@/lib/portal';import {PlantMini} from '@/components/PlantCard';import {legacyOrders,money} from '@/lib/legacy';
 export const metadata={title:'Your account',robots:{index:false,follow:false}};export const dynamic='force-dynamic';
 const MSG:Record<string,[string,'ok'|'error']>={name:['Please add your name.','error'],current:['Your current password isn’t right.','error'],password:['Your new password needs at least 10 characters.','error']};
 export default async function Account({searchParams}:{searchParams:Promise<{e?:string;saved?:string;welcome?:string}>}){
  const u=await requireCustomer();const full=await getUser(u.email) as Record<string,string>|null;const {e,saved,welcome}=await searchParams;
  const first=u.name.split(' ')[0];
- const [plants,projects]=await Promise.all([listPlants(u.email).catch(()=>[]),listProjects(u.email).catch(()=>[])]);
+ const [plants,projects,past]=await Promise.all([listPlants(u.email).catch(()=>[]),listProjects(u.email).catch(()=>[]),legacyOrders(u.email)]);
+ const fd=(x:string)=>new Date(x.replace(' ','T')).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
  const due=plants.filter(p=>p.reminders&&careStatus(p).state==='due');const approvals=projects.reduce((n,p)=>n+pendingApprovals(p),0);const news=projects.reduce((n,p)=>n+unreadForClient(p),0);
  const byDue=[...plants].sort((a,b)=>careStatus(a).days-careStatus(b).days);
  return <StoreShell><div className="our-story-page ed-page acc">
@@ -38,7 +39,7 @@ export default async function Account({searchParams}:{searchParams:Promise<{e?:s
   </section>
 
   <section className="acc-section"><div className="ed-section-head"><p className="eyebrow">03 / ORDERS</p></div>
-   <div className="acc-orders">{connected?<p>Your recent orders will appear here.</p>:<><p>You haven’t placed an order on the new website yet. Orders from our previous website aren’t shown here; call <a href="tel:+441661871481">01661 871 481</a> for help with an earlier order.</p></>}<a className="text-link" href="/delivery-returns">Delivery &amp; returns ↗</a></div>
+   <div className="acc-orders">{past.length?<><p>Your previous orders with us, including those from artificialplants.co.uk and replicaplants.co.uk.</p><div className="acc-legacy">{past.slice(0,30).map(o=><details key={o.site+o.ref}><summary><b>{fd(o.date)}</b><span>{o.ref} · {o.state}</span><span>{money(o.total)}</span></summary><ul>{o.items.map((i,k)=><li key={k}>{i.q} × {i.n}</li>)}</ul><a className="text-link acc-again" href={'/shop?q='+encodeURIComponent((o.items[0]?.n||'').split(' ').slice(0,3).join(' '))}>Find these again ↗</a></details>)}</div></>:<p>You haven’t placed an order on the new website yet. For help with an earlier order call <a href="tel:+441661871481">01661 871 481</a>.</p>}<a className="text-link" href="/delivery-returns">Delivery &amp; returns ↗</a></div>
   </section>
 
   <section className="acc-section"><div className="ed-section-head"><p className="eyebrow">04 / YOUR DETAILS</p></div>

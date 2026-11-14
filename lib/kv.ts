@@ -10,3 +10,10 @@ export async function kv<T=unknown>(...cmd:(string|number)[]):Promise<T>{
  return (await r.json()).result as T;
 }
 export const hgetall=async(key:string)=>{const a=await kv<string[]|null>('HGETALL',key);const o:Record<string,string>={};if(a)for(let i=0;i<a.length;i+=2)o[a[i]]=a[i+1];return o;};
+/** Run many commands in one round trip (Upstash pipeline). */
+export async function kvPipe(cmds:(string|number)[][]):Promise<unknown[]>{
+ if(!kvReady)throw new Error('Storage is not connected');if(!cmds.length)return [];
+ const r=await fetch(url!+'/pipeline',{method:'POST',headers:{Authorization:'Bearer '+token,'content-type':'application/json'},body:JSON.stringify(cmds),cache:'no-store'});
+ if(!r.ok)throw new Error('Storage error '+r.status);
+ return ((await r.json()) as {result:unknown;error?:string}[]).map(x=>x.result);
+}
