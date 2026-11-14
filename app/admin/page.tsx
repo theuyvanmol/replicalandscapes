@@ -1,4 +1,4 @@
-import AdminShell,{AdmNotice} from '@/components/AdminShell';import {requireStaff} from '@/lib/auth';import {kv,hgetall} from '@/lib/kv';import {products,connected} from '@/lib/shopify';
+import AdminShell,{AdmNotice} from '@/components/AdminShell';import {requireStaff} from '@/lib/auth';import {kv,hgetall} from '@/lib/kv';import {products,connected} from '@/lib/shopify';import {adminReady,money} from '@/lib/shopify-admin';import {salesSummary} from '@/lib/shop-admin-data';
 export const metadata={title:'Dashboard · Admin',robots:{index:false,follow:false}};export const dynamic='force-dynamic';
 export default async function Dashboard({searchParams}:{searchParams:Promise<{welcome?:string;e?:string}>}){
  const u=await requireStaff();const {welcome,e}=await searchParams;
@@ -7,9 +7,11 @@ export default async function Dashboard({searchParams}:{searchParams:Promise<{we
  const tasks=Object.keys(tasksRaw).length, cats=new Set(items.map(p=>p.category)).size;
  const stats:[string,string,string][]=[['Products live',String(items.length),cats+' categories'],['Customers',String(customers),'registered accounts'],['Keep List',dec.keep+' keep',dec.maybe+' maybe · '+dec.remove+' remove'],['Launch plan',Math.round(tasks/90*100)+'%',tasks+' of 90 tasks done']];
  const first=u.name.split(' ')[0];
+ const sales=adminReady?await salesSummary().catch(()=>null):null;
  return <AdminShell user={u} active="/admin" eyebrow={new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'})} title={(welcome?'Welcome, ':'Good to see you, ')+first+'.'}>
   {welcome&&<AdmNotice>Your owner account is ready. Add the rest of the team from the Team page.</AdmNotice>}
   {e==='role'&&<AdmNotice kind="error">Your role doesn’t include that page. Ask the owner if you need access.</AdmNotice>}
+  {sales&&<div className="adm-stats adm-sales"><a className="adm-stat" href="/admin/orders"><small>Orders to send</small><b>{sales.toFulfil}</b><span>waiting to be packed</span></a><div className="adm-stat"><small>Today</small><b>{money(sales.today.t)}</b><span>{sales.today.n} orders</span></div><div className="adm-stat"><small>Last 7 days</small><b>{money(sales.week.t)}</b><span>{sales.week.n} orders</span></div><div className="adm-stat"><small>Last 30 days</small><b>{money(sales.month.t)}</b><span>{sales.month.n} orders</span></div></div>}
   <div className="adm-stats">{stats.map(([l,v,s])=><div className="adm-stat" key={l}><small>{l}</small><b>{v}</b><span>{s}</span></div>)}</div>
   <div className="adm-cols">
    <section className="adm-card"><h2>Store connection</h2>

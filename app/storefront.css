@@ -737,3 +737,19 @@ html body footer,html body .visual-contact p,html body .visual-contact a{font-si
 .hp-btns{display:flex;gap:4px}.hp-btns button{width:28px;height:28px;border:1px solid var(--line);border-radius:8px;background:#fff;cursor:pointer}.hp-btns button:disabled{opacity:.35;cursor:default}
 .hp .pp-search{display:grid;gap:6px;font-size:12px;font-weight:600}.hp .pp-search input{border:1px solid #22382c2e;background:#fbfaf6;border-radius:10px;padding:10px 12px;font:400 14px DM,Arial,sans-serif}
 .adm-save{grid-column:1/-1}
+
+/* ===== Admin: Shopify back office ===== */
+.adm-tabs{display:flex;gap:6px;margin-bottom:14px}.adm-tabs a{padding:9px 16px;border-radius:99px;border:1px solid var(--line);background:#fff;font-size:13px}.adm-tabs a[aria-current=page]{background:#1f3328;color:#fff;border-color:#1f3328}
+.adm-items{max-width:280px;font-size:12.5px;color:#22382cb3}
+.adm-table tr.is-muted{opacity:.55}
+.adm-lines{list-style:none;margin:0 0 14px;padding:0;display:grid;gap:10px}
+.adm-lines li{display:grid;grid-template-columns:52px 1fr auto;gap:12px;align-items:center;font-size:13px}
+.adm-lines .thumb{width:52px;height:60px;border-radius:8px;background:#f3f1ea;overflow:hidden}.adm-lines .thumb img{width:100%;height:100%;object-fit:contain}
+.adm-lines b{display:block;font-weight:600}.adm-lines small{color:#22382c99}
+.adm-totals{margin:0 0 12px;border-top:1px solid var(--line);padding-top:10px;display:grid;gap:6px;font-size:13px}.adm-totals div{display:flex;justify-content:space-between}.adm-totals dt{color:#22382cb3}.adm-totals dd{margin:0}.adm-totals .tot{font-weight:700;font-size:15px;border-top:1px solid var(--line);padding-top:8px}
+.adm-sub{font:600 12px DM,Arial,sans-serif;letter-spacing:1px;text-transform:uppercase;color:#22382c99;margin:16px 0 6px}
+.adm-address{font-style:normal;font-size:13.5px;line-height:1.6;margin-bottom:14px}
+.adm-price{width:110px;border:1px solid #22382c2e;border-radius:8px;padding:8px 10px;font:400 14px DM,Arial,sans-serif;background:#fbfaf6}
+.adm-prod-img{width:100%;aspect-ratio:1;object-fit:contain;background:#f3f1ea;border-radius:12px;margin-bottom:12px}
+.adm-flags{border:0;padding:0;margin:8px 0;display:grid;gap:6px}.adm-flags legend{font-size:12px;font-weight:600;margin-bottom:6px}
+.adm-sales .adm-stat{background:#1f3328;color:#fff;border-color:#1f3328}.adm-sales .adm-stat small,.adm-sales .adm-stat span{color:#ffffffb3}.adm-sales a.adm-stat{text-decoration:none}
