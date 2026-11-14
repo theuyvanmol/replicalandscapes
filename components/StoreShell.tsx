@@ -10,7 +10,7 @@ export default function StoreShell({children}:{children:React.ReactNode}){return
  <div dangerouslySetInnerHTML={{__html:header}}/>
  <main className="store-wrap">{children}</main>
  <div className="site-footer" dangerouslySetInnerHTML={{__html:siteFooter}}/>
- <footer className="wrap"><span>© 2026 Replica Landscapes</span><span>Lifelike planting. Lasting impressions.</span><a href="#">Back to top ↑</a></footer>
+ <footer className="wrap"><span>© 2026 Replica Landscapes</span><span>Lifelike planting. Lasting impressions.</span><span className="foot-legal"><a href="/privacy-policy">Privacy</a> · <a href="/terms-conditions">Terms</a></span><a href="#">Back to top ↑</a></footer>
  <Script src="/design/shop-menu.js" strategy="afterInteractive"/>
  <Script src="/design/store-header.js" strategy="afterInteractive"/>
  <Script src="/design/commerce-bridge.js" strategy="afterInteractive"/>

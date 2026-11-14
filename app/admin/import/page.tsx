@@ -7,10 +7,10 @@ export default async function ImportPage({searchParams}:{searchParams:Promise<{k
  const k=key&&ttl>0?await kv<string|null>('GET','import:key'):null;
  return <AdminShell user={u} active="/admin/import" eyebrow="FROM THE OLD WEBSITES" title="Data import">
   <section className="adm-stats">
-   <div><b>{fmt(c.customers)}</b><span>Customers</span></div>
-   <div><b>{fmt(c.orderCustomers)}</b><span>Customers with order history</span></div>
-   <div><b>{fmt(c.subscribers)}</b><span>Newsletter subscribers</span></div>
-   <div><b>{fmt(c.enquiries)}</b><span>Archived enquiries</span></div>
+   <div className="adm-stat"><small>Customers</small><b>{fmt(c.customers)}</b><span>real customers kept, bot sign-ups left behind</span></div>
+   <div className="adm-stat"><small>Order history</small><b>{fmt(c.orderCustomers)}</b><span>customers with past orders</span></div>
+   <div className="adm-stat"><small>Newsletter</small><b>{fmt(c.subscribers)}</b><span>subscribers, consent kept</span></div>
+   <div className="adm-stat"><small>Enquiries</small><b>{fmt(c.enquiries)}</b><span>archived messages</span></div>
   </section>
   <section className="adm-card"><h2>What happens to this data</h2>
    <p>Customers, orders, subscribers and enquiries from artificialplants.co.uk and replicaplants.co.uk are stored privately here. When a past customer creates an account on the new website with the same email, their previous orders appear in their account automatically. You can find anyone under <a href="/admin/customers">Customers</a>.</p>
