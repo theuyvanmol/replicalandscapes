@@ -808,3 +808,4 @@ html body footer,html body .visual-contact p,html body .visual-contact a{font-si
 @media(max-width:960px){.bk-layout{grid-template-columns:1fr}.bk-summary{position:static}.bk-rec-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:560px){.bk-line{grid-template-columns:96px minmax(0,1fr)}.bk-price{grid-column:2;text-align:left;display:flex;gap:10px;align-items:baseline}.bk-summary{padding:24px 20px 34px}}
 .adm-auto{font-style:normal;font-size:10px;letter-spacing:.12em;text-transform:uppercase;background:#e4ecdf;color:#2f5a3c;border-radius:99px;padding:3px 8px;margin-left:8px;vertical-align:middle}
+.bk .bk-title{font-weight:400}.bk .bk-rec b,.bk .bk-price b{font-weight:400}
