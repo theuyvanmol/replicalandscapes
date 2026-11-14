@@ -61,11 +61,16 @@ export async function setNewArrivals(handles:string[]){
 export async function listDiscounts(){
  const d=await admin(`query{codeDiscountNodes(first:50,sortKey:CREATED_AT,reverse:true){nodes{id codeDiscount{__typename ... on DiscountCodeBasic{title status startsAt endsAt usageLimit asyncUsageCount appliesOncePerCustomer codes(first:1){nodes{code}} customerGets{value{__typename ... on DiscountPercentage{percentage} ... on DiscountAmount{amount{amount}}}} minimumRequirement{__typename ... on DiscountMinimumSubtotal{greaterThanOrEqualToSubtotal{amount}}}} ... on DiscountCodeFreeShipping{title status startsAt endsAt asyncUsageCount codes(first:1){nodes{code}}}}}}}`);
  return d.codeDiscountNodes.nodes as any[];}
-export async function createDiscount(x:{title:string;code:string;kind:'percent'|'amount';value:number;min:number|null;startsAt:string;endsAt:string|null;usageLimit:number|null;oncePerCustomer:boolean}){
+export async function createDiscount(x:{auto?:boolean;title:string;code:string;kind:'percent'|'amount';value:number;min:number|null;startsAt:string;endsAt:string|null;usageLimit:number|null;oncePerCustomer:boolean}){
  const base:any={title:x.title,code:x.code,startsAt:x.startsAt,endsAt:x.endsAt,usageLimit:x.usageLimit,appliesOncePerCustomer:x.oncePerCustomer,
   customerGets:{value:x.kind==='percent'?{percentage:x.value/100}:{discountAmount:{amount:String(x.value),appliesOnEachItem:false}},items:{all:true}},
   ...(x.min?{minimumRequirement:{subtotal:{greaterThanOrEqualToSubtotal:String(x.min)}}}:{})};
+ if(x.auto){/* applies on its own in the basket and checkout, no code needed */
+  const a:any={title:x.title,startsAt:x.startsAt,endsAt:x.endsAt,customerGets:base.customerGets,...(base.minimumRequirement?{minimumRequirement:base.minimumRequirement}:{})};
+  const runA=(extra:any)=>admin(`mutation($d:DiscountAutomaticBasicInput!){discountAutomaticBasicCreate(automaticBasicDiscount:$d){automaticDiscountNode{id} userErrors{field message}}}`,{d:{...a,...extra}});
+  let r:any;try{r=await runA({context:{all:'ALL'}});}catch(e){if(/context/i.test(String((e as Error).message)))r=await runA({});else throw e;}
+  userErrors(r.discountAutomaticBasicCreate);return;}
  const run=(extra:any)=>admin(`mutation($d:DiscountCodeBasicInput!){discountCodeBasicCreate(basicCodeDiscount:$d){codeDiscountNode{id} userErrors{field message}}}`,{d:{...base,...extra}});
  let d:any;try{d=await run({context:{all:'ALL'}});}catch(e){if(/context/i.test(String((e as Error).message)))d=await run({customerSelection:{all:true}});else throw e;}
  userErrors(d.discountCodeBasicCreate);}
-export async function setDiscountActive(id:string,active:boolean){const m=active?'discountCodeActivate':'discountCodeDeactivate';const d=await admin(`mutation($id:ID!){${m}(id:$id){userErrors{field message}}}`,{id});userErrors(d[m]);}
+export async function setDiscountActive(id:string,active:boolean){const auto=/DiscountAutomaticNode/.test(id);const m=auto?(active?'discountAutomaticActivate':'discountAutomaticDeactivate'):(active?'discountCodeActivate':'discountCodeDeactivate');const d=await admin(`mutation($id:ID!){${m}(id:$id){userErrors{field message}}}`,{id});userErrors(d[m]);}

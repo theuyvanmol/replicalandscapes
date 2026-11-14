@@ -20,3 +20,16 @@ export async function changeLine(form:FormData){
  const p=d.cartLinesRemove||d.cartLinesUpdate;if(p.userErrors.length)throw new Error(p.userErrors.map((e:any)=>e.message).join(' '));revalidatePath('/cart');
 }
 export async function checkout(){const id=(await cookies()).get('replica-cart')?.value;if(!connected||!id)redirect('/cart');const cart=await getCart(id);if(!cart?.totalQuantity)redirect('/cart');const url=new URL(cart.checkoutUrl);if(url.protocol!=='https:')throw new Error('Invalid checkout URL.');redirect(url.toString());}
+
+/* Discount codes in the basket (Shopify checks them; automatic discounts apply on their own). */
+async function setCodes(codes:string[]){const id=(await cookies()).get('replica-cart')?.value;if(!connected||!id)redirect('/cart');
+ const d:any=await graphql(`mutation($cartId:ID!,$codes:[String!]!){cartDiscountCodesUpdate(cartId:$cartId,discountCodes:$codes){cart{discountCodes{code applicable}} userErrors{message}}}`,{cartId:id,codes});
+ return d.cartDiscountCodesUpdate;}
+export async function applyCode(form:FormData){const code=String(form.get('code')||'').trim().toUpperCase().replace(/[^A-Z0-9_-]/g,'').slice(0,40);if(!code)redirect('/cart?code=empty');
+ const id=(await cookies()).get('replica-cart')?.value;const cart=id?await getCart(id):null;const existing=(cart?.discountCodes||[]).filter((c:any)=>c.applicable).map((c:any)=>c.code);
+ const r=await setCodes([...new Set([...existing,code])]);revalidatePath('/cart');
+ const ok=r?.cart?.discountCodes?.find((c:any)=>c.code.toUpperCase()===code)?.applicable;
+ if(!ok){await setCodes(existing);redirect('/cart?code=invalid&c='+encodeURIComponent(code));}
+ redirect('/cart?code=ok&c='+encodeURIComponent(code));}
+export async function removeCode(form:FormData){const code=String(form.get('code')||'');const id=(await cookies()).get('replica-cart')?.value;const cart=id?await getCart(id):null;
+ await setCodes((cart?.discountCodes||[]).map((c:any)=>c.code).filter((c:string)=>c!==code));revalidatePath('/cart');redirect('/cart');}
