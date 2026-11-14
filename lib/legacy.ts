@@ -1,5 +1,5 @@
 import 'server-only';
-import {randomBytes,timingSafeEqual} from 'crypto';
+import {randomBytes,timingSafeEqual,createHash} from 'crypto';
 import {kv,kvPipe} from '@/lib/kv';
 /* Data carried over from the old Visualsoft websites (artificialplants.co.uk and replicaplants.co.uk).
    legacy:c  hash  email -> customer      legacy:s  hash  email -> newsletter subscriber
@@ -31,7 +31,8 @@ export async function importBatch(kind:string,items:any[]):Promise<{saved:number
  else if(kind==='subscribers'){const args:string[]=[];for(const x of items){const e=em(x.email);if(!okEmail(e)){skipped++;continue;}
    const v:LegacySub={f:s(x.f,80),l:s(x.l,80),joined:s(x.joined,30),active:b(x.active),unsub:b(x.unsub),bounced:b(x.bounced),site:s(x.site,40)};args.push(e,JSON.stringify(v));saved++;}
   if(args.length)cmds.push(['HSET','legacy:s',...args]);}
- else if(kind==='enquiries'){const args:string[]=[];for(const x of items){const id=s(x.id,40)||randomBytes(6).toString('hex');
+ else if(kind==='clear'){const k=String(items[0]||'');if(!['legacy:e','legacy:s'].includes(k))throw new Error('Not allowed');cmds.push(['DEL',k]);saved=1;}
+ else if(kind==='enquiries'){const args:string[]=[];for(const x of items){const id=s(x.id,40)||createHash('sha1').update(s(x.date)+'|'+em(x.email)+'|'+s(x.message,4000)).digest('hex').slice(0,12);
    const v:LegacyEnquiry={id,date:s(x.date,30),name:s(x.name,120),email:em(x.email),phone:s(x.phone,40),product:s(x.product,200),message:s(x.message,4000),type:s(x.type,40),site:s(x.site,40)};args.push(s(x.site,20)+':'+id,JSON.stringify(v));saved++;}
   if(args.length)cmds.push(['HSET','legacy:e',...args]);}
  else if(kind==='orders'){/* items: [{email, orders:[...]}] merged with anything already stored, newest first */
