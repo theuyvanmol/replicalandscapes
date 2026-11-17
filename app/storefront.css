@@ -874,3 +874,4 @@ html body footer,html body .visual-contact p,html body .visual-contact a{font-si
 .pp-tools{display:flex;gap:6px}.pp-tools button{border:1px solid #22382c26;background:#fff;border-radius:8px;height:28px;min-width:30px;font-size:13px;cursor:pointer}.pp-tools button:disabled{opacity:.35;cursor:default}.pp-tools .pp-del{margin-left:auto;padding:0 8px;font-size:12px;color:#8a4a32}
 .pp-add button{width:100%;aspect-ratio:1;border:1.5px dashed #22382c40;border-radius:10px;background:#faf8f3;display:grid;place-content:center;gap:4px;cursor:pointer;font:inherit;color:var(--ink)}.pp-add button:hover{border-color:var(--ink)}.pp-add b{font-size:28px;font-weight:300;line-height:1}.pp-add span{font-size:13px}.pp-add small{font-size:11px;color:#22382c80}
 .detail-enquire{display:grid;gap:12px;margin:18px 0 6px}.detail-enquire-sizes{font-size:14px;margin:0;color:#22382cb0}.detail-enquire .detail-add{justify-self:start}
+.pp-grid>li{width:100%;min-width:0}.pp-img{width:100%}
