@@ -1,3 +1,4 @@
+import {V} from '@/lib/asset-version';
 import fs from 'node:fs';
 import path from 'node:path';
 import Script from 'next/script';
@@ -11,8 +12,8 @@ export default function StoreShell({children}:{children:React.ReactNode}){return
  <main className="store-wrap">{children}</main>
  <div className="site-footer" dangerouslySetInnerHTML={{__html:siteFooter}}/>
  <footer className="wrap"><span>© 2026 Replica Landscapes</span><span>Lifelike planting. Lasting impressions.</span><span className="foot-legal"><a href="/privacy-policy">Privacy</a> · <a href="/terms-conditions">Terms</a></span><a href="#">Back to top ↑</a></footer>
- <Script src="/design/shop-menu.js" strategy="afterInteractive"/>
- <Script src="/design/store-header.js" strategy="afterInteractive"/>
- <Script src="/design/commerce-bridge.js" strategy="afterInteractive"/>
- <Script src="/design/reveal.js" strategy="afterInteractive"/>
+ <Script src={"/design/shop-menu.js"+V} strategy="afterInteractive"/>
+ <Script src={"/design/store-header.js"+V} strategy="afterInteractive"/>
+ <Script src={"/design/commerce-bridge.js"+V} strategy="afterInteractive"/>
+ <Script src={"/design/reveal.js"+V} strategy="afterInteractive"/>
 </div>}

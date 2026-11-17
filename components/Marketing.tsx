@@ -1,3 +1,4 @@
+import {V} from '@/lib/asset-version';
 import {businessLd} from '@/lib/business-ld';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -15,11 +16,11 @@ export default async function Marketing({ kind }: { kind: 'home' | 'story' | 'co
   html=html.replace('<section class="intro wrap reveal">',paths+(band||'')+'<section class="intro wrap reveal">');
   const jb=await journalBandHtml();if(jb)html=html.replace('<section class="greenery-faq wrap visual-faq"',jb+'<section class="greenery-faq wrap visual-faq"');}
  return <>{kind==='home'&&<script type="application/ld+json" dangerouslySetInnerHTML={{__html:businessLd()}}/>}<div dangerouslySetInnerHTML={{__html:html}} />
- <Script src={kind==='home'?'/design/app.js':'/design/story.js'} strategy="afterInteractive" />
- <Script src="/design/shop-menu.js" strategy="afterInteractive" />
- <Script src="/design/commercial-motion.js" strategy="afterInteractive" />
- <Script src="/design/intro.js" strategy="afterInteractive" />
- {kind==='home'&&<Script src="/design/promos.js" strategy="afterInteractive" />}
- <Script src="/design/vs-map.js" strategy="afterInteractive" />
- <Script src="/design/commerce-bridge.js" strategy="afterInteractive" /></>;
+ <Script src={kind==='home'?'/design/app.js'+V:'/design/story.js'+V} strategy="afterInteractive" />
+ <Script src={"/design/shop-menu.js"+V} strategy="afterInteractive" />
+ <Script src={"/design/commercial-motion.js"+V} strategy="afterInteractive" />
+ <Script src={"/design/intro.js"+V} strategy="afterInteractive" />
+ {kind==='home'&&<Script src={"/design/promos.js"+V} strategy="afterInteractive" />}
+ <Script src={"/design/vs-map.js"+V} strategy="afterInteractive" />
+ <Script src={"/design/commerce-bridge.js"+V} strategy="afterInteractive" /></>;
 }
