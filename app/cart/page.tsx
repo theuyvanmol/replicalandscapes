@@ -43,7 +43,7 @@ export default async function Cart({searchParams}:{searchParams:Promise<{code?:s
     </div>
     {lines.map(l=>{const v=l.merchandise;const img=v.image?.url||v.product.featuredImage?.url;const unit=n(l.cost.amountPerQuantity);const was=n(l.cost.compareAtAmountPerQuantity);const disc=(l.discountAllocations||[]).reduce((s:number,d:any)=>s+n(d.discountedAmount),0);
      return <article className="bk-line" key={l.id}>
-      <a className="bk-img" href={'/products/'+v.product.handle}>{img&&<img src={sized(img,360)} alt={v.image?.altText||v.product.title} loading="lazy"/>}</a>
+      <a className="bk-img" data-fit="" href={'/products/'+v.product.handle}>{img&&<img crossOrigin="anonymous" src={sized(img,360)} alt={v.image?.altText||v.product.title} loading="lazy"/>}</a>
       <div className="bk-info">
        <a className="bk-title" href={'/products/'+v.product.handle}>{v.product.title}</a>
        {v.title&&v.title!=='Default Title'&&<p className="bk-variant">{v.title}</p>}
