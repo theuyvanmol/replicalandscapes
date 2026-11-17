@@ -84,3 +84,24 @@ export async function salesDetail(days:number){
  const places=new Map<string,{lat:number;lon:number;city:string;cc:string;n:number;t:number}>();
  for(const o of rows){const a=o.shippingAddress;if(!a||a.latitude==null)continue;const k=(a.city||'')+a.countryCodeV2;const v=places.get(k)||{lat:Math.round(a.latitude*10)/10,lon:Math.round(a.longitude*10)/10,city:a.city||'',cc:a.countryCodeV2||'',n:0,t:0};v.n++;v.t+=Number(o.totalPriceSet.shopMoney.amount);places.set(k,v);}
  return {byDay,total,orders:rows.length,aov:rows.length?total/rows.length:0,best:[...best].sort((a,b)=>b[1]-a[1]).slice(0,6),places:[...places.values()]};}
+/* ---------- Product photos ---------- */
+export type AdminMedia={id:string;alt:string;url:string|null;status:string};
+export async function productMedia(id:string):Promise<AdminMedia[]>{
+ const d=await admin(`query($id:ID!){product(id:$id){media(first:50){nodes{id alt status mediaContentType preview{image{url}} ... on MediaImage{image{url}}}}}}`,{id});
+ return (d.product?.media.nodes||[]).filter((m:any)=>m.mediaContentType==='IMAGE').map((m:any)=>({id:m.id,alt:m.alt||'',url:m.image?.url||m.preview?.image?.url||null,status:m.status}));}
+/** Upload one image (bytes) to Shopify's file storage and attach it to the product. */
+export async function addProductImage(id:string,bytes:Buffer,mime:string,filename:string,alt:string){
+ const st=await admin(`mutation($input:[StagedUploadInput!]!){stagedUploadsCreate(input:$input){stagedTargets{url resourceUrl parameters{name value}} userErrors{field message}}}`,{input:[{resource:'IMAGE',filename,mimeType:mime,httpMethod:'POST',fileSize:String(bytes.length)}]});
+ userErrors(st.stagedUploadsCreate);const t=st.stagedUploadsCreate.stagedTargets[0];
+ const form=new FormData();for(const p of t.parameters)form.append(p.name,p.value);form.append('file',new Blob([new Uint8Array(bytes)],{type:mime}),filename);
+ const up=await fetch(t.url,{method:'POST',body:form});if(!up.ok)throw new AdminError('Shopify didn’t accept the photo upload ('+up.status+').');
+ const media=[{originalSource:t.resourceUrl,mediaContentType:'IMAGE',alt}];
+ try{const r=await admin(`mutation($product:ProductUpdateInput!,$media:[CreateMediaInput!]){productUpdate(product:$product,media:$media){userErrors{field message}}}`,{product:{id},media});userErrors(r.productUpdate);}
+ catch(e){if(!/media|argument|field/i.test(String((e as Error).message)))throw e;const r=await admin(`mutation($id:ID!,$media:[CreateMediaInput!]!){productCreateMedia(productId:$id,media:$media){mediaUserErrors{field message}}}`,{id,media});if(r.productCreateMedia.mediaUserErrors?.length)throw new AdminError(r.productCreateMedia.mediaUserErrors[0].message);}}
+export async function deleteProductImage(id:string,mediaId:string){
+ try{const r=await admin(`mutation($files:[FileUpdateInput!]!){fileUpdate(files:$files){userErrors{field message}}}`,{files:[{id:mediaId,referencesToRemove:[id]}]});userErrors(r.fileUpdate);}
+ catch{const r=await admin(`mutation($id:ID!,$m:[ID!]!){productDeleteMedia(productId:$id,mediaIds:$m){mediaUserErrors{message}}}`,{id,m:[mediaId]});if(r.productDeleteMedia.mediaUserErrors?.length)throw new AdminError(r.productDeleteMedia.mediaUserErrors[0].message);}}
+export async function reorderProductImages(id:string,order:string[]){
+ const r=await admin(`mutation($id:ID!,$moves:[MoveInput!]!){productReorderMedia(id:$id,moves:$moves){mediaUserErrors{message}}}`,{id,moves:order.map((m,i)=>({id:m,newPosition:String(i)}))});
+ if(r.productReorderMedia.mediaUserErrors?.length)throw new AdminError(r.productReorderMedia.mediaUserErrors[0].message);}
+export async function setProductImageAlt(mediaId:string,alt:string){const r=await admin(`mutation($files:[FileUpdateInput!]!){fileUpdate(files:$files){userErrors{field message}}}`,{files:[{id:mediaId,alt}]});userErrors(r.fileUpdate);}

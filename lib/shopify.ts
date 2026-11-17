@@ -8,7 +8,7 @@ import {facets,type Facets} from '@/lib/facets';
 /* Shopify tags ("Outdoor", "Fire retardant") confirm or add to what the description says. */
 const tagged=(f:Facets,tags:string[])=>{const t=tags.map(x=>x.toLowerCase());return {...f,outdoor:f.outdoor||t.includes('outdoor'),fr:f.fr||t.includes('fire retardant')};};
 export {fields as productFields,map as mapProduct};
-export type Product={facets?:Facets;id:string;handle:string;title:string;description:string;images:{url:string;altText:string|null;cutout?:boolean}[];price:string|null;currency:string;category:string;search?:string;variants:{id:string;title:string;availableForSale:boolean;price:{amount:string;currencyCode:string}}[]};
+export type Product={priceOnRequest?:boolean;facets?:Facets;id:string;handle:string;title:string;description:string;images:{url:string;altText:string|null;cutout?:boolean}[];price:string|null;currency:string;category:string;search?:string;variants:{id:string;title:string;availableForSale:boolean;price:{amount:string;currencyCode:string}}[]};
 export const connected=Boolean(process.env.SHOPIFY_STORE_DOMAIN&&process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN);
 export async function graphql<T>(query:string,variables:Record<string,unknown>={}):Promise<T>{
  const domain=process.env.SHOPIFY_STORE_DOMAIN!;
@@ -20,7 +20,8 @@ const fields=`id handle title description productType tags availableForSale imag
 /* Shopify doesn't know which photos are transparent cut-outs; the imported catalogue does, so carry that over by handle. */
 let cutouts:Set<string>|null=null;
 function isCutout(handle:string){if(!cutouts){try{cutouts=new Set(catalogue().filter((c:any)=>c.images?.[0]?.cutout).map((c:any)=>c.handle));}catch{cutouts=new Set();}}return cutouts.has(handle);}
-function map(p:any):Product{return {...p,description:fixOldLinks(p.description),category:p.productType,images:p.images.nodes.map((im:any,i:number)=>i===0&&isCutout(p.handle)?{...im,cutout:true}:im),variants:p.variants.nodes,price:p.priceRange.minVariantPrice.amount,currency:p.priceRange.minVariantPrice.currencyCode,facets:tagged(facets(p.title,p.description||'',p.variants.nodes.map((v:any)=>v.title)),p.tags||[])};}
+export const POR='Price on request';
+function map(p:any):Product{const por=(p.tags||[]).includes(POR);return {...p,priceOnRequest:por,description:fixOldLinks(p.description),category:p.productType,images:p.images.nodes.map((im:any,i:number)=>i===0&&isCutout(p.handle)?{...im,cutout:true}:im),variants:p.variants.nodes,price:por?null:p.priceRange.minVariantPrice.amount,currency:p.priceRange.minVariantPrice.currencyCode,facets:tagged(facets(p.title,p.description||'',p.variants.nodes.map((v:any)=>v.title)),p.tags||[])};}
 let memo:{at:number;list:Product[]}|null=null;
 export async function products():Promise<Product[]>{
  if(connected&&memo&&Date.now()-memo.at<60_000)return memo.list;

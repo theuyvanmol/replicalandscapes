@@ -13,9 +13,9 @@ export function toCard(p:Product):HomeCard{
  const hs=p.facets?.heights||[];const many=p.variants.length>1;
  const spec=[hs.length?(hs.length>1?fmtHeight(hs[0])+' – '+fmtHeight(hs[hs.length-1]):fmtHeight(hs[0])):'',many?p.variants.length+' sizes':'',p.facets?.outdoor?'Indoor & outdoor':''].filter(Boolean).join(' · ')||p.category;
  const imgs=p.images||[];
- return {handle:p.handle,name:p.title,category:p.category,price:min&&min>0?min:null,from:many&&new Set(prices).size>1,image:imgs[0]?.url||'',homeImage:(imgs[1]||imgs[0])?.url||'',cutout:!!(imgs[0] as {cutout?:boolean})?.cutout||!connected,spec,
+ return {handle:p.handle,name:p.title,category:p.category,price:p.priceOnRequest?null:min&&min>0?min:null,from:many&&new Set(prices).size>1,image:imgs[0]?.url||'',homeImage:(imgs[1]||imgs[0])?.url||'',cutout:!!(imgs[0] as {cutout?:boolean})?.cutout||!connected,spec,
   description:(p.description||'').replace(/\s+/g,' ').trim().slice(0,320),url:'/products/'+p.handle,available:p.variants.some(v=>v.availableForSale!==false),
-  options:p.variants.map(v=>({label:/^(default title|standard|as shown)$/i.test(v.title)?'As shown':v.title,id:v.id,available:v.availableForSale!==false,price:Number(v.price?.amount)||null}))};}
+  options:p.variants.map(v=>({label:/^(default title|standard|as shown)$/i.test(v.title)?'As shown':v.title,id:v.id,available:v.availableForSale!==false,price:p.priceOnRequest?null:Number(v.price?.amount)||null}))};}
 async function collection(handle:string,n:number):Promise<Product[]>{
  const d:any=await graphql(`query($h:String!,$n:Int!){collection(handle:$h){products(first:$n){nodes{${productFields}}}}}`,{h:handle,n});
  return (d.collection?.products?.nodes||[]).map(mapProduct);}

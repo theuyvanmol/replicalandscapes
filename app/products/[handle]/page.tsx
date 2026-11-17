@@ -7,7 +7,7 @@ function productLd(p:any){const base=(process.env.NEXT_PUBLIC_SITE_URL||'').repl
  const shipping={"@type":"OfferShippingDetails",shippingDestination:{"@type":"DefinedRegion",addressCountry:'GB'},deliveryTime:{"@type":"ShippingDeliveryTime",handlingTime:{"@type":"QuantitativeValue",minValue:1,maxValue:3,unitCode:'DAY'},transitTime:{"@type":"QuantitativeValue",minValue:1,maxValue:2,unitCode:'DAY'}},shippingRate:{"@type":"MonetaryAmount",value:Number(p.price||0)>=100?0:7.95,currency:'GBP'}};
  const returns={"@type":"MerchantReturnPolicy",applicableCountry:'GB',returnPolicyCategory:'https://schema.org/MerchantReturnFiniteReturnWindow',merchantReturnDays:14,returnMethod:'https://schema.org/ReturnByMail',returnFees:'https://schema.org/ReturnFeesCustomerResponsibility'};
  const prod={"@type":"Product","@id":url+'#product',name:p.title,description:clean(p.description).slice(0,5000),image:p.images.map((i:any)=>i.url.startsWith('/')?base+i.url:i.url),url,category:p.category,brand:{"@type":"Brand",name:'Replica Landscapes'},
-  offers:(p.variants.length?p.variants:[{id:p.id,title:'',price:{amount:p.price,currencyCode:p.currency},availableForSale:true}]).filter((v:any)=>v.price?.amount).map((v:any)=>({"@type":"Offer",name:v.title&&v.title!=='Default Title'?v.title:undefined,sku:String(v.id).split('/').pop(),price:Number(v.price.amount).toFixed(2),priceCurrency:v.price.currencyCode||'GBP',itemCondition:'https://schema.org/NewCondition',availability:v.availableForSale===false?'https://schema.org/OutOfStock':'https://schema.org/InStock',url,seller:{"@id":base+'/#business'},shippingDetails:shipping,hasMerchantReturnPolicy:returns}))};
+  offers:p.priceOnRequest?undefined:(p.variants.length?p.variants:[{id:p.id,title:'',price:{amount:p.price,currencyCode:p.currency},availableForSale:true}]).filter((v:any)=>v.price?.amount).map((v:any)=>({"@type":"Offer",name:v.title&&v.title!=='Default Title'?v.title:undefined,sku:String(v.id).split('/').pop(),price:Number(v.price.amount).toFixed(2),priceCurrency:v.price.currencyCode||'GBP',itemCondition:'https://schema.org/NewCondition',availability:v.availableForSale===false?'https://schema.org/OutOfStock':'https://schema.org/InStock',url,seller:{"@id":base+'/#business'},shippingDetails:shipping,hasMerchantReturnPolicy:returns}))};
  const crumbs={"@type":"BreadcrumbList",itemListElement:[{"@type":"ListItem",position:1,name:'Home',item:base+'/'},{"@type":"ListItem",position:2,name:p.category||'Shop',item:base+'/shop?category='+encodeURIComponent(p.category||'')},{"@type":"ListItem",position:3,name:p.title,item:url}]};
  return JSON.stringify({"@context":"https://schema.org","@graph":[prod,crumbs]}).replace(/</g,'\\u003c');}
 export default async function Detail({params}:{params:Promise<{handle:string}>}){const {handle}=await params;const p=await product(handle);if(!p)notFound();
@@ -22,22 +22,27 @@ export default async function Detail({params}:{params:Promise<{handle:string}>})
    <p className="eyebrow">{p.category}</p>
    <h1>{p.title}</h1>
    <p className="detail-price">{p.price===null?'Enquire for pricing':(many?'From ':'')+money(p.price,p.currency)}</p>
-   <p className="tax-note">{p.price===null?'Price on request. Call 01661 871 481 for a quote.':'Including VAT. Free UK mainland delivery on orders over £100.'}</p>
+   <p className="tax-note">{p.price===null?'Every piece is quoted individually. Tell us what you need and we’ll reply with a price, usually the same working day.':'Including VAT. Free UK mainland delivery on orders over £100.'}</p>
    {(()=>{const f=p.facets;if(!f)return null;const hs=f.heights;const rows:[string,string][]=[];
     if(hs.length)rows.push(['Height',hs.length>1?`${fmtHeight(hs[0])} – ${fmtHeight(hs[hs.length-1])} (${hs.length} sizes)`:fmtHeight(hs[0])]);
     rows.push(['Suitable for',f.outdoor?'Indoors and outdoors (UV-protected)':'Indoor use']);
     if(f.fr)rows.push(['Fire rating','Fire-retardant foliage. Ask us for the certificate']);
     rows.push(['Category',p.category]);
     return <dl className="detail-facts">{rows.map(([k,v])=><div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}</dl>;})()}
-   <form action={connected?addToCart:undefined}>
+   {p.priceOnRequest?<div className="detail-enquire">
+    {many&&<p className="detail-enquire-sizes">Available in {options.length} sizes: {options.map(v=>v.title).join(', ')}.</p>}
+    <a className="pill detail-add" href={'/contact?topic='+encodeURIComponent('Price enquiry')+'&product='+encodeURIComponent(p.handle)}>Enquire about price <span aria-hidden="true">↗</span></a>
+    <a className="detail-basket-link" href="tel:+441661871481">Or call 01661 871 481 ↗</a>
+    <ul className="detail-trust"><li><b>Personal quote</b><span>Usually the same working day</span></li><li><b>Bespoke sizes</b><span>Made to your space</span></li><li><b>Expert advice</b><span><a href="tel:+441661871481">01661 871 481</a></span></li><li><b>16+ years</b><span>Of planting expertise</span></li></ul>
+   </div>:<form action={connected?addToCart:undefined}>
     <label htmlFor="variant">Product option</label>
-    <select id="variant" name="variant" required>{options.map(v=><option key={v.id} value={v.id} disabled={connected&&!v.availableForSale}>{v.title}{many?' — '+money(v.price.amount,v.price.currencyCode):''}{connected&&!v.availableForSale?' · Sold out':''}</option>)}</select>
+    <select id="variant" name="variant" required>{options.map(v=><option key={v.id} value={v.id} disabled={connected&&!v.availableForSale}>{v.title}{many&&!p.priceOnRequest?' — '+money(v.price.amount,v.price.currencyCode):''}{connected&&!v.availableForSale?' · Sold out':''}</option>)}</select>
     <label htmlFor="quantity">Quantity</label>
     <QuantityPicker/>
     <button className="pill detail-add" type={connected?'submit':'button'} disabled={connected?!p.variants.some(v=>v.availableForSale):false} data-preview={connected?undefined:'true'}>Add to basket <span aria-hidden="true">↗</span></button>
     <a className="detail-basket-link" href="/cart">View basket ↗</a>
     <ul className="detail-trust"><li><b>Free UK delivery</b><span>On mainland orders over £100</span></li><li><b>Usually 3–5 working days</b><span>Tracked by FedEx</span></li><li><b>Expert advice</b><span><a href="tel:+441661871481">01661 871 481</a></span></li><li><b>16+ years</b><span>Of planting expertise</span></li></ul>
-   </form>
+   </form>}
    <details className="product-accordion" open><summary>About this product</summary><p>{p.description.split(/(\/products\/[a-z0-9-]+|\/shop\b)/).map((t:string,i:number)=>i%2?<a key={i} href={t}>{t==='/shop'?'our shop':'this product'}</a>:t)}</p></details>
    {p.facets&&p.facets.sizes.length>1&&<details className="product-accordion"><summary>Sizes &amp; dimensions</summary><ul className="detail-list">{p.facets.sizes.map(z=><li key={z}>{z}</li>)}</ul></details>}
    <details className="product-accordion"><summary>Delivery &amp; returns</summary><p>Usually dispatched within 3–5 working days (up to 7–10 for some items), on a tracked FedEx next-working-day service between 9am and 5pm. UK mainland delivery is £7.95, or free on orders over £100. Northern Ireland, Ireland and worldwide delivery is quoted on request.</p><p>Please check your delivery straight away and tell us about any damage within 24 hours. <a href="/delivery-returns">Full delivery &amp; returns information</a>.</p></details>

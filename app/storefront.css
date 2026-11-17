@@ -864,3 +864,13 @@ html body footer,html body .visual-contact p,html body .visual-contact a{font-si
 @media(max-width:1200px){.em{grid-template-columns:1fr}.em-preview{position:static}}
 .adm-stats.adm-sales{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
 .em-block .img-box{max-height:180px;overflow:hidden;border-radius:10px}.em-block .img-box img{width:100%;height:180px;object-fit:cover}
+/* ---------- Product photo manager ---------- */
+.pp-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px}.pp-head h2{margin:0}
+.pp-grid{list-style:none;margin:14px 0 10px;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;border-radius:12px;transition:outline-color .2s;outline:2px dashed transparent;outline-offset:6px}.pp-grid.is-over{outline-color:#55684f}
+.pp-grid li{display:grid;gap:6px;cursor:grab}.pp-grid li.is-drag{opacity:.4}
+.pp-img{position:relative;aspect-ratio:1;border-radius:10px;overflow:hidden;background:#ebe8dd;border:1px solid var(--line);display:grid;place-items:center;font-size:12px;color:#22382c99}.pp-img img{width:100%;height:100%;object-fit:cover}
+.pp-img em{position:absolute;left:6px;top:6px;font-style:normal;font-size:10px;letter-spacing:.1em;text-transform:uppercase;background:#22382c;color:#f4f1e8;border-radius:99px;padding:3px 8px}
+.pp-alt{border:1px solid #22382c26;border-radius:8px;padding:6px 8px;font:inherit;font-size:12px;background:#fff;min-width:0}
+.pp-tools{display:flex;gap:6px}.pp-tools button{border:1px solid #22382c26;background:#fff;border-radius:8px;height:28px;min-width:30px;font-size:13px;cursor:pointer}.pp-tools button:disabled{opacity:.35;cursor:default}.pp-tools .pp-del{margin-left:auto;padding:0 8px;font-size:12px;color:#8a4a32}
+.pp-add button{width:100%;aspect-ratio:1;border:1.5px dashed #22382c40;border-radius:10px;background:#faf8f3;display:grid;place-content:center;gap:4px;cursor:pointer;font:inherit;color:var(--ink)}.pp-add button:hover{border-color:var(--ink)}.pp-add b{font-size:28px;font-weight:300;line-height:1}.pp-add span{font-size:13px}.pp-add small{font-size:11px;color:#22382c80}
+.detail-enquire{display:grid;gap:12px;margin:18px 0 6px}.detail-enquire-sizes{font-size:14px;margin:0;color:#22382cb0}.detail-enquire .detail-add{justify-self:start}
