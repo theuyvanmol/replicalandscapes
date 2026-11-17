@@ -13,7 +13,7 @@ export function brandEmail({title,lead,button,url,foot}:{title:string;lead:strin
  <a href="${esc(url)}" style="display:inline-block;background:#22382c;color:#faf8f3;text-decoration:none;border-radius:99px;padding:14px 26px;font-size:14px">${esc(button)} ↗</a>
  <p style="font-size:12px;line-height:1.6;color:#22382c99;margin:28px 0 0">${esc(foot)}</p>
  </td></tr></table><p style="font-size:11px;color:#22382c80;margin:18px 0 0">Replica Landscapes · Ash Tree Farm, Heddon-on-the-Wall, NE15 0HE · 01661 871 481</p></td></tr></table></body></html>`;}
-export async function sendEmail(to:string,subject:string,html:string){
+export async function sendEmail(to:string,subject:string,html:string,replyTo?:string){
  if(!emailReady)return false;
- const r=await fetch('https://api.resend.com/emails',{method:'POST',headers:{Authorization:'Bearer '+process.env.RESEND_API_KEY,'content-type':'application/json'},body:JSON.stringify({from:process.env.EMAIL_FROM||'Replica Landscapes <onboarding@resend.dev>',to:[to],subject,html})});
+ const r=await fetch('https://api.resend.com/emails',{method:'POST',headers:{Authorization:'Bearer '+process.env.RESEND_API_KEY,'content-type':'application/json'},body:JSON.stringify({from:process.env.EMAIL_FROM||'Replica Landscapes <onboarding@resend.dev>',to:[to],subject,html,...(replyTo?{reply_to:replyTo}:{})})});
  return r.ok;}

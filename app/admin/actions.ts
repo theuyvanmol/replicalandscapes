@@ -62,3 +62,17 @@ export async function changeStaffPassword(fd:FormData){
  await audit(me.email,'Changed password');
  redirect('/admin/settings?saved=1');
 }
+
+/* Team alerts: who gets emailed about new enquiries and orders. */
+export async function saveAlerts(fd:FormData){
+ const me=await requireStaff();
+ const emails=((await kv<string[]>('SMEMBERS','users:staff'))||[]);
+ const canAll=me.role==='owner'||me.role==='admin';
+ for(const e of emails){if(!canAll&&e!==me.email)continue;
+  for(const k of ['enquiries','orders'])await kv('HSET','user:'+e,'mute_'+k,fd.get(k+':'+e)?'0':'1');}
+ await audit(me.email,'Updated team email alerts');redirect('/admin/team?saved=alerts');}
+export async function turnOnOrderAlerts(){
+ const me=await requireStaff(['owner','admin']);
+ const {enableOrderAlerts}=await import('@/lib/order-alerts');
+ try{await enableOrderAlerts();}catch(e){redirect('/admin/team?e=hook&m='+encodeURIComponent(String((e as Error).message).slice(0,160)));}
+ await audit(me.email,'Turned on new-order emails');redirect('/admin/team?saved=hook');}

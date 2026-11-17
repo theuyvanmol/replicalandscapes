@@ -1,6 +1,8 @@
 'use server';
 import {redirect} from 'next/navigation';
 import {headers} from 'next/headers';
+import {after} from 'next/server';
+import {notifyTeam,alertEmail,adminLink} from '@/lib/notify';
 import {randomBytes} from 'node:crypto';
 import {kvReady} from '@/lib/kv';
 import {rateLimited} from '@/lib/auth';
@@ -17,6 +19,8 @@ export async function sendEnquiry(fd:FormData){
  const ip=((await headers()).get('x-forwarded-for')||'').split(',')[0].trim()||'unknown';
  if(await rateLimited('contact',ip))back('busy');
  const ph=str(fd,'product',120);const pr=/^[a-z0-9-]+$/.test(ph)?await getProduct(ph).catch(()=>null):null;
- await addEnquiry({id:randomBytes(6).toString('hex'),at:new Date().toISOString(),name,email,phone,topic,message,page:str(fd,'from',120),...(pr?{product:{handle:pr.handle,title:pr.title,img:pr.images[0]?.url||''}}:{})});
+ const prod=pr?{handle:pr.handle,title:pr.title,img:pr.images[0]?.url||''}:undefined;
+ await addEnquiry({id:randomBytes(6).toString('hex'),at:new Date().toISOString(),name,email,phone,topic,message,page:str(fd,'from',120),...(prod?{product:prod}:{})});
+ after(()=>notifyTeam('enquiries',`New enquiry: ${topic}${prod?' · '+prod.title:''} (${name})`,alertEmail({title:'New enquiry from '+name,lead:topic+(prod?' about '+prod.title:'')+'. Reply to this email to answer them directly.',img:prod?.img?prod.img+(prod.img.includes('?')?'&':'?')+'width=320':undefined,rows:[['Name',name],['Email',email],['Phone',phone],['Topic',topic],['Product',prod?.title||''],['Sent from',str(fd,'from',120)]],body:message,button:'Open in Enquiries',url:adminLink('/admin/enquiries')}),email));
  redirect('/contact?sent=1#form');
 }
