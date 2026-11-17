@@ -893,3 +893,17 @@ html body footer,html body .visual-contact p,html body .visual-contact a{font-si
 .dt img{width:38px;height:38px;object-fit:cover;border-radius:6px;background:#ebe8dd;flex:none}.dt span{display:grid;flex:1}.dt small{color:#22382c99;font-size:11px}.dt-picked button{border:0;background:#f1efe7;border-radius:50%;width:26px;height:26px;cursor:pointer}.dt-found b{font-weight:400;font-size:18px}
 .adm-promo-act{display:flex;gap:12px;align-items:center}.adm-del{color:#8a4a32}
 .pp .pp-add button{height:auto;padding:0;aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}.pp .pp-add button>*{position:static;top:auto}
+/* Studio shots shown whole (no cropping); room photos fill the frame. See public/design/fit.js */
+[data-fit] img{transition:opacity .3s}
+[data-fit]:not(.fit-studio):not(.fit-photo) img{opacity:0}
+.arrival-photo.fit-studio{background:#f1efe7}.arrival-photo.fit-studio img{object-fit:contain!important;padding:7% 9% 5%!important;mix-blend-mode:multiply}
+.arrival-photo.fit-photo img{object-fit:cover!important;padding:0!important}
+.photo-sculpture.fit-studio .sculpture-plant{object-fit:contain;padding:10% 10% 6%;background:#f1efe7}
+.live-cutout.fit-studio img{object-fit:contain;max-width:84%;max-height:92%;mix-blend-mode:multiply}
+.live-cutout.fit-photo{align-items:stretch}.live-cutout.fit-photo img{width:100%;max-width:100%;height:100%;object-fit:cover;mix-blend-mode:normal;border-radius:4px}
+.bk-rec-img.fit-studio img{object-fit:contain;padding:8% 8% 4%;mix-blend-mode:multiply}
+[data-fit]:not(.fit-studio):not(.fit-photo) img{animation:fitshow .3s 2s forwards}@keyframes fitshow{to{opacity:1}}
+.enq-prod{display:grid;grid-template-columns:120px minmax(0,1fr);gap:18px;align-items:center;margin:4px 0 22px;padding:12px;border:1px solid var(--line);border-radius:4px 4px 50px 4px;background:#f3f1ea;text-decoration:none;color:var(--ink)}
+.enq-prod-img{display:block;aspect-ratio:1;border-radius:4px;overflow:hidden;background:#f1efe7}.enq-prod-img img{width:100%;height:100%;object-fit:cover}.enq-prod.fit-studio .enq-prod-img img{object-fit:contain;padding:6%;mix-blend-mode:multiply}
+.enq-prod-text{display:grid;gap:4px}.enq-prod-text small{font-size:10px;letter-spacing:.16em;color:#22382c99}.enq-prod-text b{font-family:var(--serif);font-weight:400;font-size:21px;line-height:1.2}.enq-prod-text span{font-size:13px;color:#22382cb0}.enq-prod-text em{font-style:normal;font-size:13px;text-decoration:underline;text-underline-offset:3px}
+.adm-enq-prod{display:flex;align-items:center;gap:12px;margin:10px 0;padding:8px;border:1px solid var(--line);border-radius:10px;text-decoration:none;color:var(--ink);background:#faf8f3;max-width:520px}.adm-enq-prod img{width:64px;height:64px;object-fit:cover;border-radius:8px;background:#f1efe7}.adm-enq-prod span{display:grid;flex:1}.adm-enq-prod small{font-size:11px;color:#22382c99}.adm-enq-prod em{font-style:normal;font-size:12px}

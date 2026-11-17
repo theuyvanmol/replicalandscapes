@@ -23,6 +23,7 @@ export default async function Contact({searchParams}:{searchParams:Promise<{sent
      <form action={sendEnquiry} className="ed-form">
       <p className="eyebrow">SEND US A MESSAGE</p><h2>How can<br/><em>we help?</em></h2>
       {e&&ERR[e]&&<p className="ed-err" role="alert">{ERR[e]}</p>}
+      {prod&&<><input type="hidden" name="product" value={prod.handle}/><a className="enq-prod" href={'/products/'+prod.handle} data-fit="">{prod.images[0]&&<span className="enq-prod-img"><img crossOrigin="anonymous" src={prod.images[0].url+(prod.images[0].url.includes('?')?'&':'?')+'width=400'} alt={prod.images[0].altText||prod.title}/></span>}<span className="enq-prod-text"><small>YOU’RE ASKING ABOUT</small><b>{prod.title}</b>{prod.variants.length>1&&<span>{prod.variants.length} sizes available</span>}<em>View product ↗</em></span></a></>}
       <fieldset className="ed-topics"><legend>What is it about?</legend>{TOPICS.map(t=><label key={t}><input type="radio" name="topic" value={t} defaultChecked={t===pick}/><span>{t}</span></label>)}</fieldset>
       <div className="ed-row"><label>Your name<input name="name" required autoComplete="name"/></label><label>Email<input name="email" type="email" required autoComplete="email"/></label></div>
       <label>Phone (optional)<input name="phone" type="tel" autoComplete="tel"/></label>

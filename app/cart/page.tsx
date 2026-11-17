@@ -87,6 +87,6 @@ export default async function Cart({searchParams}:{searchParams:Promise<{code?:s
   </div></>}
 
   {suggest.length>0&&<section className="bk-recs"><div className="bk-recs-head"><p className="eyebrow">{count?'COMPLETE THE LOOK':'MOST LOVED'}</p><h2>You might <em>also like.</em></h2></div>
-   <div className="bk-rec-grid">{suggest.map(p=><a key={p.handle} className={'bk-rec'+(p.cutout?' is-cutout':'')} href={'/products/'+p.handle}><span className="bk-rec-img">{p.image&&<img src={sized(p.image,520)} alt={p.name} loading="lazy"/>}</span><b>{p.name}</b><span>{p.price!==null?(p.from?'From ':'')+money(String(p.price),'GBP'):'Price on request'}</span></a>)}</div></section>}
+   <div className="bk-rec-grid">{suggest.map(p=><a key={p.handle} className={'bk-rec'+(p.cutout?' is-cutout':'')} href={'/products/'+p.handle}><span className="bk-rec-img" data-fit="">{p.image&&<img crossOrigin="anonymous" src={sized(p.image,520)} alt={p.name} loading="lazy"/>}</span><b>{p.name}</b><span>{p.price!==null?(p.from?'From ':'')+money(String(p.price),'GBP'):'Price on request'}</span></a>)}</div></section>}
  </div></StoreShell>;
 }

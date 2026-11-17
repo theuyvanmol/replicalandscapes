@@ -1,6 +1,6 @@
 import 'server-only';
 import {kv,kvReady} from '@/lib/kv';
-export type Enquiry={id:string;at:string;name:string;email:string;phone:string;topic:string;message:string;page:string;read?:boolean};
+export type Enquiry={id:string;at:string;name:string;email:string;phone:string;topic:string;message:string;page:string;read?:boolean;product?:{handle:string;title:string;img:string}};
 export const TOPICS=['General question','Price enquiry','Product advice','Bespoke installation','Trade & commercial','An existing order','Leaf Clean maintenance','Gift cards'];
 export async function addEnquiry(e:Enquiry){await kv('SET','enquiry:'+e.id,JSON.stringify(e));await kv('ZADD','enquiries',Date.parse(e.at),e.id);}
 export async function listEnquiries(n=200):Promise<Enquiry[]>{if(!kvReady)return [];const ids=(await kv<string[]>('ZREVRANGE','enquiries',0,n-1))||[];if(!ids.length)return [];

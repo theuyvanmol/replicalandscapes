@@ -79,7 +79,7 @@ export default function Catalogue({items,initialCategory='',initialQuery='',init
      const hs=p.facets?.heights||[];const hRange=hs.length?(hs.length>1?fmtHeight(hs[0])+' – '+fmtHeight(hs[hs.length-1]):fmtHeight(hs[0])):'';
      const spec=[hRange,many?p.variants.length+' sizes':'',p.facets?.outdoor?'Indoor & outdoor':''].filter(Boolean).join(' · ')||(p.variants[0]&&!/^(standard|as shown)$/i.test(p.variants[0].title)?p.variants[0].title:p.category);
      return <article className="shop-card" key={p.id}>
-      <div className={'sculpture '+(cut?'has-cutout':'photo-sculpture')}><a className="sculpture-link" href={href} aria-label={p.title}><span className="arched-backplate"/><span className="stone-plinth"/>{im&&<img className="sculpture-plant" src={im.url} alt={im.altText||p.title} loading="lazy"/>}</a><a className="quick-look" href={href} aria-label={'View '+p.title}>+</a></div>
+      <div className={'sculpture '+(cut?'has-cutout':'photo-sculpture')} data-fit={cut?undefined:''}><a className="sculpture-link" href={href} aria-label={p.title}><span className="arched-backplate"/><span className="stone-plinth"/>{im&&<img className="sculpture-plant" crossOrigin="anonymous" src={im.url} alt={im.altText||p.title} loading="lazy"/>}</a><a className="quick-look" href={href} aria-label={'View '+p.title}>+</a></div>
       <a className="shop-name" href={href}>{p.title}</a><p className="shop-spec">{spec}</p>
       <div className="shop-card-bottom"><strong>{price?(many?'From ':'')+price:'Enquire for pricing'}</strong><a href={href}>View options ↗</a></div>
      </article>})}</div>

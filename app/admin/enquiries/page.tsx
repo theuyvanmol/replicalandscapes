@@ -5,7 +5,7 @@ export default async function Enquiries(){const u=await requireStaff();const lis
   <p className="adm-banner">Messages sent from the Contact page. Reply by email or phone; mark each one as done when it has been handled.</p>
   {list.length?<ul className="adm-enq">{list.map(e=><li key={e.id} className={e.read?'is-read':''}>
    <div className="adm-enq-head"><span className={'adm-status '+(e.read?'s-draft':'s-live')}>{e.read?'Done':'New'}</span><b>{e.name}</b><span>{e.topic}</span><time>{ukFormat(e.at)}</time></div>
-   <p className="adm-enq-msg">{e.message}</p>
+   {e.product&&<a className="adm-enq-prod" href={'/products/'+e.product.handle} target="_blank" rel="noopener">{e.product.img&&<img src={e.product.img+(e.product.img.includes('?')?'&':'?')+'width=160'} alt=""/>}<span><small>Asking about</small><b>{e.product.title}</b></span><em>View ↗</em></a>}<p className="adm-enq-msg">{e.message}</p>
    <div className="adm-enq-foot"><a href={`mailto:${e.email}?subject=${encodeURIComponent('Re: your enquiry to Replica Landscapes')}`}>{e.email}</a>{e.phone&&<a href={'tel:'+e.phone.replace(/\s/g,'')}>{e.phone}</a>}
     <form action={toggleRead}><input type="hidden" name="id" value={e.id}/><input type="hidden" name="read" value={e.read?'0':'1'}/><button className="adm-clear">{e.read?'Mark as new':'Mark as done'}</button></form>
     {['owner','admin'].includes(u.role)&&<form action={removeEnquiry}><input type="hidden" name="id" value={e.id}/><button className="adm-remove">Delete</button></form>}</div></li>)}</ul>
