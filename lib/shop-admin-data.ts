@@ -80,6 +80,7 @@ export async function createDiscount(x:{target?:DiscountTarget;auto?:boolean;tit
  const run=(extra:any)=>admin(`mutation($d:DiscountCodeBasicInput!){discountCodeBasicCreate(basicCodeDiscount:$d){codeDiscountNode{id} userErrors{field message}}}`,{d:{...base,...extra}});
  let d:any;try{d=await run({context:{all:'ALL'}});}catch(e){if(/context/i.test(String((e as Error).message)))d=await run({customerSelection:{all:true}});else throw e;}
  userErrors(d.discountCodeBasicCreate);}
+export async function deleteDiscount(id:string){const auto=/DiscountAutomaticNode/.test(id);const m=auto?'discountAutomaticDelete':'discountCodeDelete';const d=await admin(`mutation($id:ID!){${m}(id:$id){userErrors{field message}}}`,{id});userErrors(d[m]);}
 export async function setDiscountActive(id:string,active:boolean){const auto=/DiscountAutomaticNode/.test(id);const m=auto?(active?'discountAutomaticActivate':'discountAutomaticDeactivate'):(active?'discountCodeActivate':'discountCodeDeactivate');const d=await admin(`mutation($id:ID!){${m}(id:$id){userErrors{field message}}}`,{id});userErrors(d[m]);}
 /** Orders for the last `days` days: daily revenue, order count, average order and best sellers. */
 export async function salesDetail(days:number){

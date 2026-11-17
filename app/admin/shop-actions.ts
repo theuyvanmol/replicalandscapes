@@ -2,7 +2,7 @@
 import {redirect} from 'next/navigation';
 import {revalidatePath,revalidateTag} from 'next/cache';
 import {requireStaff,audit} from '@/lib/auth';
-import {fulfilOrder,setOrderNote,updateAdminProduct,createDiscount,setDiscountActive} from '@/lib/shop-admin-data';
+import {fulfilOrder,setOrderNote,updateAdminProduct,createDiscount,setDiscountActive,deleteDiscount} from '@/lib/shop-admin-data';
 const str=(fd:FormData,k:string,max=500)=>String(fd.get(k)||'').replace(/\r/g,'').trim().slice(0,max);
 const err=(e:unknown)=>encodeURIComponent(String((e as Error)?.message||e).slice(0,300));
 const gid=(type:string,n:string)=>/^\d{1,20}$/.test(n)?`gid://shopify/${type}/${n}`:'';
@@ -29,5 +29,7 @@ export async function createDiscountAction(fd:FormData){const u=await requireSta
  if(('categories' in target&&!(target.categories as string[]).length)||('products' in target&&!(target.products as string[]).length))redirect('/admin/discounts?e='+encodeURIComponent('Choose at least one '+(tm==='categories'?'category':'product')+' for this discount.'));
  try{await createDiscount({target:target as any,auto,title:str(fd,'title',100)||code,code,kind,value,min:Number(str(fd,'min',8))||null,startsAt:day(str(fd,'start',10))||new Date().toISOString(),endsAt:day(str(fd,'end',10),true),usageLimit:Number(str(fd,'limit',6))||null,oncePerCustomer:fd.get('once')==='on'});await audit(u.email,'discount.create',code||str(fd,'title',100));}catch(e){redirect('/admin/discounts?e='+err(e));}
  redirect('/admin/discounts?saved='+(auto?'auto':code));}
+export async function deleteDiscountAction(fd:FormData){const u=await requireStaff(['owner','admin']);const id=str(fd,'id',80);if(!/^gid:\/\/shopify\/Discount(Code|Automatic)Node\/\d+$/.test(id))redirect('/admin/discounts');
+ try{await deleteDiscount(id);await audit(u.email,'discount.delete',id);}catch(e){redirect('/admin/discounts?e='+err(e));}redirect('/admin/discounts?saved=deleted');}
 export async function toggleDiscountAction(fd:FormData){const u=await requireStaff(['owner','admin']);const id=str(fd,'id',80);if(!/^gid:\/\/shopify\/Discount(Code|Automatic)Node\/\d+$/.test(id))redirect('/admin/discounts');
  try{await setDiscountActive(id,fd.get('active')==='1');await audit(u.email,'discount.toggle',id);}catch(e){redirect('/admin/discounts?e='+err(e));}redirect('/admin/discounts?saved=1');}
