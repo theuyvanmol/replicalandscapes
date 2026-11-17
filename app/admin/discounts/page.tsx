@@ -1,15 +1,17 @@
 import AdminShell,{AdmNotice} from '@/components/AdminShell';import ShopNotConnected from '@/components/ShopNotConnected';import {requireStaff} from '@/lib/auth';
-import {adminReady,money} from '@/lib/shopify-admin';import {listDiscounts} from '@/lib/shop-admin-data';import {createDiscountAction,toggleDiscountAction} from '@/app/admin/shop-actions';
+import {adminReady,money} from '@/lib/shopify-admin';import {listDiscounts} from '@/lib/shop-admin-data';import {createDiscountAction,toggleDiscountAction} from '@/app/admin/shop-actions';import {products as allProducts} from '@/lib/shopify';import DiscountTargets from '@/components/DiscountTargets';
 export const metadata={title:'Discount codes · Admin',robots:{index:false,follow:false}};export const dynamic='force-dynamic';
 const d=(s:string|null)=>s?new Date(s).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}):'No end date';
 export default async function Discounts({searchParams}:{searchParams:Promise<{saved?:string;e?:string}>}){const u=await requireStaff(['owner','admin']);const {saved,e}=await searchParams;
+ const prods=adminReady?await allProducts().catch(()=>[]):[];const catMap=new Map<string,number>();prods.forEach(p=>{if(p.category)catMap.set(p.category,(catMap.get(p.category)||0)+1);});
+ const cats=[...catMap].sort((a,b)=>a[0].localeCompare(b[0])).map(([name,count])=>({name,count}));const pick=prods.map(p=>({id:p.id,title:p.title,img:p.images[0]?.url||'',category:p.category}));
  let list:any[]=[],error='';if(adminReady){try{list=await listDiscounts();}catch(x){error=(x as Error).message;}}
  return <AdminShell user={u} active="/admin/discounts" eyebrow="Shopify" title="Discounts" actions={adminReady?<a className="pill" href="#new">New code <span aria-hidden="true">+</span></a>:undefined}>
   {saved&&<AdmNotice>{saved==='1'?'Saved.':saved==='auto'?'Sale created. It applies automatically in the basket and at checkout.':`Code ${saved} created. Customers can enter it in the basket or at checkout.`}</AdmNotice>}{(e||error)&&<AdmNotice kind="error">{e||error}</AdmNotice>}
   {!adminReady?<ShopNotConnected what="Discount codes"/>:<>
    <p className="adm-banner">Two kinds: an <b>automatic sale</b> (e.g. Black Friday 20% off everything) applies by itself in the basket, while a <b>code</b> (e.g. WELCOME10) has to be entered. To advertise one on the homepage, add it to a promotion in <a href="/admin/promotions">Promotions &amp; events</a>.</p>
    {list.length?<ul className="adm-promos">{list.map(n=>{const c=n.codeDiscount;const code=c.codes?.nodes?.[0]?.code;const v=c.customerGets?.value;const val=c.__typename==='DiscountCodeFreeShipping'?'Free delivery':v?.__typename==='DiscountPercentage'?Math.round(v.percentage*100)+'% off':v?.amount?money(v.amount.amount)+' off':'';const active=c.status==='ACTIVE';
-    return <li key={n.id}><span className="adm-stage">%</span><span className="adm-promo-main"><small>{val}{c.minimumRequirement?.greaterThanOrEqualToSubtotal?` · over ${money(c.minimumRequirement.greaterThanOrEqualToSubtotal.amount)}`:''}</small><b>{code||c.title}</b>{n.auto&&<em className="adm-auto">Automatic</em>}<span>{d(c.startsAt)} – {d(c.endsAt)} · used {c.asyncUsageCount}{c.usageLimit?` of ${c.usageLimit}`:''} times</span></span>
+    return <li key={n.id}><span className="adm-stage">%</span><span className="adm-promo-main"><small>{val}{c.minimumRequirement?.greaterThanOrEqualToSubtotal?` · over ${money(c.minimumRequirement.greaterThanOrEqualToSubtotal.amount)}`:''}</small><b>{code||c.title}</b>{n.auto&&<em className="adm-auto">Automatic</em>}<span>{(()=>{const it=c.customerGets?.items;const names=it?.__typename==='DiscountCollections'?it.collections.nodes.map((x:any)=>x.title.replace(/^Category: /,'')):it?.__typename==='DiscountProducts'?it.products.nodes.map((x:any)=>x.title):null;return names?<>On {names.slice(0,3).join(', ')}{names.length>3?' +'+(names.length-3)+' more':''} · </>:<>Everything · </>;})()}{d(c.startsAt)} – {d(c.endsAt)} · used {c.asyncUsageCount}{c.usageLimit?` of ${c.usageLimit}`:''} times</span></span>
      <span className={'adm-status '+(active?'s-live':c.status==='SCHEDULED'?'s-sched':'s-draft')}>{c.status.toLowerCase()}</span>
      <span className="adm-promo-act">{c.status!=='EXPIRED'&&<form action={toggleDiscountAction}><input type="hidden" name="id" value={n.id}/><input type="hidden" name="active" value={active?'0':'1'}/><button className="adm-clear">{active?'Switch off':'Switch on'}</button></form>}</span></li>;})}</ul>
    :<section className="adm-card adm-empty"><h2>No discount codes yet</h2><p className="adm-muted">Create one below, for example BLACKFRIDAY for 25% off.</p></section>}
@@ -24,6 +26,7 @@ export default async function Discounts({searchParams}:{searchParams:Promise<{sa
      <label>Total uses <span>optional</span><input name="limit" inputMode="numeric"/></label>
      <label className="auth-check"><input type="checkbox" name="once" defaultChecked/> One use per customer</label>
      <label>Name <span>shown to customers for automatic sales</span><input name="title" placeholder="Black Friday 20% off"/></label>
+     <DiscountTargets categories={cats} products={pick}/>
      <button className="pill">Create discount</button></form></section>
   </>}
  </AdminShell>;}
