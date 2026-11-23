@@ -910,3 +910,9 @@ html body footer,html body .visual-contact p,html body .visual-contact a{font-si
 .arrival .arrival-photo{height:auto!important;aspect-ratio:2/3}
 .adm-note{font-size:13px;line-height:1.6;color:#22382cb3;margin:0}.adm-hook{display:flex;align-items:center;gap:12px}.adm-hook form{display:flex;align-items:center;gap:14px;flex-wrap:wrap}.adm-pill{display:inline-block;font-size:12px;padding:8px 14px;border-radius:99px;background:#f1efe7;border:1px solid var(--line)}.adm-pill.ok{background:#e4ecd9;color:#2b4a2f}
 .adm-alerts{display:grid;gap:14px;justify-items:start}.adm-alerts table{width:100%;border-collapse:collapse;font-size:13px}.adm-alerts th{text-align:left;font-weight:600;font-size:11px;letter-spacing:.4px;text-transform:uppercase;color:#22382c99;padding:8px 10px;border-bottom:1px solid var(--line)}.adm-alerts td{padding:10px;border-bottom:1px solid var(--line)}.adm-alerts td small{display:block;color:#22382c99;font-size:11px}.adm-alerts th:not(:first-child),.adm-alerts td:not(:first-child){text-align:center;width:130px}.adm-alerts input{width:18px;height:18px;accent-color:#22382c}
+/* Desktop menu that comes back when you scroll up (see /design/header-scroll.js) */
+@media(min-width:901px){
+ html.hdr-float header:not(.mega-is-open){position:fixed!important;z-index:50!important;transition:transform .35s cubic-bezier(.2,.7,.2,1),box-shadow .35s;box-shadow:0 10px 30px #22382c14!important}
+ html.hdr-float.hdr-hide header:not(.mega-is-open){transform:translateY(calc(-100% - 40px))!important;box-shadow:none!important}
+ html.hdr-float header:not(.mega-is-open) .logo-brand img{max-height:40px;width:auto}
+}
