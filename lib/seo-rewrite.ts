@@ -25,7 +25,7 @@ const textOnly=(fn:(s:string)=>string)=>(html:string)=>html.replace(/(<[^>]*>)|(
 const apply=(s:string,rules:[RegExp,string][])=>rules.reduce((a,[r,w])=>a.replace(r,w),s);
 export const brandText=(s:string)=>apply(apply(fixOldLinks(s||''),BRAND),UK);
 export const rewriteHtml=textOnly(brandText);
-const plain=(html:string)=>String(html||'').replace(/<(br|\/p|\/li|\/h\d)[^>]*>/gi,'. ').replace(/<[^>]+>/g,' ').replace(/&nbsp;/g,' ').replace(/&amp;/g,'&').replace(/&[a-z]+;/g,' ').replace(/\s*\.\s*(\.\s*)+/g,'. ').replace(/\s+/g,' ').trim();
+const plain=(html:string)=>String(html||'').replace(/<br[^>]*>/gi,' ').replace(/<(\/p|\/li|\/h\d)[^>]*>/gi,'. ').replace(/<[^>]+>/g,' ').replace(/&nbsp;/g,' ').replace(/&amp;/g,'&').replace(/&[a-z]+;/g,' ').replace(/\s*\.\s*(\.\s*)+/g,'. ').replace(/\s+/g,' ').trim();
 const cut=(s:string,n:number)=>{if(s.length<=n)return s;const c=s.slice(0,n-1);return c.slice(0,Math.max(c.lastIndexOf(' '),n*0.6)).replace(/[\s,;:–-]+$/,'')+'…';};
 export const cleanTitle=(t:string)=>brandText(String(t||'').replace(/[\s\-–|:]*(?:by\s+)?(?:Replica[\s-]?Plants|(?:The\s+)?Artificial\s+Plants\s+Shop|Replica\s+Landscapes)\s*$/i,'')).replace(/\s+/g,' ').trim();
 const tidyTitle=(t:string)=>t.replace(/\s+/g,' ').replace(/\s*[-–|]\s*$/,'').trim();
