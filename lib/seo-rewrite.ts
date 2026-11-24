@@ -20,7 +20,7 @@ const UK:[RegExp,string][]=[
  [/\bbehavior(s)?\b/g,'behaviour$1'],[/\bcatalog(s)?\b/g,'catalogue$1'],[/\bliter(s)?\b/g,'litre$1'],[/\bplow\b/g,'plough'],[/\bfaucet\b/g,'tap'],[/\bstore front\b/g,'shopfront'],
  [/\bvacation\b/g,'holiday'],[/\bapartment(s)?\b/g,'flat$1'],[/\bfall foliage\b/gi,'autumn foliage'],
 ];
-const textOnly=(fn:(s:string)=>string)=>(html:string)=>html.replace(/(<[^>]*>)|([^<]+)/g,(m,tag,txt)=>tag?tag.replace(/(href|src)="([^"]*)"/g,(a,k,v)=>`${k}="${k==='href'?fixOldLinks(v):v}"`):fn(txt));
+const textOnly=(fn:(s:string)=>string)=>(html:string)=>html.replace(/(<[^>]*>)|([^<]+)/g,(_m:string,tag:string,txt:string)=>tag?tag.replace(/(href|src)="([^"]*)"/g,(_a:string,k:string,v:string)=>`${k}="${k==='href'?fixOldLinks(v):v}"`):fn(txt));
 const apply=(s:string,rules:[RegExp,string][])=>rules.reduce((a,[r,w])=>a.replace(r,w),s);
 export const brandText=(s:string)=>apply(apply(fixOldLinks(s||''),BRAND),UK);
 export const rewriteHtml=textOnly(brandText);
