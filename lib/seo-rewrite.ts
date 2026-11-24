@@ -32,9 +32,14 @@ const tidyTitle=(t:string)=>t.replace(/\s+/g,' ').replace(/\s*[-–|]\s*$/,'').t
 export function seoTitle(title:string){const t=tidyTitle(brandText(title));const full=`${t} | Replica Landscapes`;if(full.length<=60)return full;if(t.length<=60)return t;return cut(t,60);}
 export function seoDescription(title:string,html:string,opts:{outdoor?:boolean;fire?:boolean;priceOnRequest?:boolean}={}){
  const t=tidyTitle(brandText(title));const body=plain(brandText(html));
- const first=(body.split(/(?<=[.!?])\s+/).find(s=>s.length>40&&!/^(dimensions|size|height|width|please|note|delivery|sku)/i.test(s))||'').replace(/\s+/g,' ');
- const perks=[opts.outdoor?'UV-protected for outdoor use':'lifelike and maintenance-free',opts.fire?'flame retardant':null].filter(Boolean).join(', ');
- const tail=` ${perks.charAt(0).toUpperCase()+perks.slice(1)}. ${opts.priceOnRequest?'Enquire for a price.':'Fast UK delivery.'}`;
- const lead=`${t} from Replica Landscapes.`;
- let d=lead+(first?' '+first:'');d=cut(d,155-tail.length)+tail;
- if(d.length>158)d=cut(lead+tail,158);return d.replace(/\s+/g,' ').trim();}
+ const tail=opts.priceOnRequest?' Enquire for a price with Replica Landscapes.':' UK delivery from Replica Landscapes.';
+ const perk=[opts.outdoor?'UV-protected for outdoor use':'Lifelike and maintenance-free',opts.fire?'flame retardant':null].filter(Boolean).join(', ')+'.';
+ const budget=158-t.length-2-tail.length;
+ const sentences=body.split(/(?<=[.!?])\s+/).map(x=>x.trim()).filter(x=>x.length>30&&!/^(dimensions|size|height|width|please|note|delivery|sku|pot|planter not)/i.test(x)&&!/@|\d{5}/.test(x));
+ let mid='';
+ for(const x of sentences){const y=x.replace(/[.!?]+$/,'')+'.';if(y.length<=budget){mid=y;break;}
+  const clause=y.slice(0,budget).match(/^(.{40,}?[,;–-])(?!.*[,;–-])/)?.[1]||'';if(clause.length>=45){mid=clause.replace(/[\s,;:–-]+$/,'')+'.';break;}}
+ if(!mid||mid.length<45)mid=perk+(budget-perk.length>45?' Realistic detail that looks great all year round.':'');
+ else if(mid.length+perk.length+1<=budget)mid+=' '+perk;
+ let d=`${t}: ${mid}${tail}`.replace(/\s+/g,' ').trim();
+ if(d.length>160)d=cut(`${t}: ${perk}${tail}`,160);return d;}
