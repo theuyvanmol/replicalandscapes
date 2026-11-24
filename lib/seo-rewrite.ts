@@ -3,8 +3,9 @@ import {fixOldLinks} from '@/lib/old-links';
    old company names -> Replica Landscapes, old-site links -> this site, US -> UK spelling,
    and a search title + description for every product. "Artificial" stays where it describes a product. */
 const BRAND:[RegExp,string][]=[
- [/\b(?:https?:\/\/)?(?:www\.)?(?:replicaplants|artificialplants|theartificialplantsshop)\.co\.uk\b\/?/gi,'replicalandscapes.com'],
- [/\bReplica[\s-]?Plants(?:\s+(?:Ltd|Limited))?\b/gi,'Replica Landscapes'],
+ [/\bsale@(replicaplants|artificialplants)\.co\.uk/gi,'sales@$1.co.uk'],
+ [/(?<![@\w.])(?:https?:\/\/)?(?:www\.)?(?:replicaplants|artificialplants|theartificialplantsshop)\.co\.uk\b/gi,'replicalandscapes.com'],
+ [/(?<![@\w.])Replica[\s-]Plants(?:\s+(?:Ltd|Limited))?\b/gi,'Replica Landscapes'],
  [/\b(?:The\s+)?Artificial\s+Plants\s+(?:Shop|Ltd\.?|Limited|Company|Co\.)\b/gi,'Replica Landscapes'],
  [/\b(at|from|with|by|choose|contact|call|trust)\s+(?:the\s+)?Artificial\s+Plants\b(?!\s+(?:and|&|for|in|to|that|are|which|range|collection))/gi,'$1 Replica Landscapes'],
  [/\bArtificial\s+Plants(?:’|')s?\b(?=\s+(?:team|range|experts?|service|customers|showroom|own|warehouse))/gi,'Replica Landscapes’'],
@@ -26,6 +27,7 @@ export const brandText=(s:string)=>apply(apply(fixOldLinks(s||''),BRAND),UK);
 export const rewriteHtml=textOnly(brandText);
 const plain=(html:string)=>String(html||'').replace(/<(br|\/p|\/li|\/h\d)[^>]*>/gi,'. ').replace(/<[^>]+>/g,' ').replace(/&nbsp;/g,' ').replace(/&amp;/g,'&').replace(/&[a-z]+;/g,' ').replace(/\s*\.\s*(\.\s*)+/g,'. ').replace(/\s+/g,' ').trim();
 const cut=(s:string,n:number)=>{if(s.length<=n)return s;const c=s.slice(0,n-1);return c.slice(0,Math.max(c.lastIndexOf(' '),n*0.6)).replace(/[\s,;:–-]+$/,'')+'…';};
+export const cleanTitle=(t:string)=>brandText(String(t||'').replace(/[\s\-–|:]*(?:by\s+)?(?:Replica[\s-]?Plants|(?:The\s+)?Artificial\s+Plants\s+Shop|Replica\s+Landscapes)\s*$/i,'')).replace(/\s+/g,' ').trim();
 const tidyTitle=(t:string)=>t.replace(/\s+/g,' ').replace(/\s*[-–|]\s*$/,'').trim();
 export function seoTitle(title:string){const t=tidyTitle(brandText(title));const full=`${t} | Replica Landscapes`;if(full.length<=60)return full;if(t.length<=60)return t;return cut(t,60);}
 export function seoDescription(title:string,html:string,opts:{outdoor?:boolean;fire?:boolean;priceOnRequest?:boolean}={}){

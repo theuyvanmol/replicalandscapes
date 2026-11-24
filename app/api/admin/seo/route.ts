@@ -2,7 +2,7 @@ import {revalidateTag} from 'next/cache';
 import {currentStaff,audit} from '@/lib/auth';
 import {admin,adminReady,userErrors} from '@/lib/shopify-admin';
 import {kv} from '@/lib/kv';
-import {rewriteHtml,brandText,seoTitle,seoDescription} from '@/lib/seo-rewrite';
+import {rewriteHtml,cleanTitle,seoTitle,seoDescription} from '@/lib/seo-rewrite';
 /* Owner-only bulk SEO tool for product copy. op=scan|backup|apply, paged 25 at a time with `after`. */
 export const maxDuration=60;
 const OLD=/replica[\s-]?plants|artificial\s+plants\s+(?:shop|ltd|limited|company)|(?:at|from|with|by|choose|contact|call)\s+(?:the\s+)?artificial\s+plants|replicaplants|artificialplants\.co|theartificialplantsshop/i;
@@ -16,7 +16,7 @@ export async function POST(req:Request){
  if(b.op==='backup'){const tag=String(b.tag||'x').replace(/\W/g,'').slice(0,20);for(const p of ps)await kv('HSET','seo-backup:'+tag,p.id,JSON.stringify({t:p.title,d:p.descriptionHtml,s:p.seo}));return Response.json({n:ps.length,next});}
  if(b.op==='apply'){const out:any[]=[];let changed=0;
   for(const p of ps){const tags=(p.tags||[]).map((t:string)=>t.toLowerCase());
-   const title=brandText(p.title);const html=rewriteHtml(p.descriptionHtml||'');
+   const title=cleanTitle(p.title);const html=rewriteHtml(p.descriptionHtml||'');
    const st=seoTitle(title),sd=seoDescription(title,html,{outdoor:tags.some((t:string)=>/outdoor|uv/.test(t))||/outdoor|uv/i.test(p.title),fire:tags.some((t:string)=>/fire|flame/.test(t))||/flame|fire/i.test(p.title),priceOnRequest:tags.includes('price on request')});
    const diff=title!==p.title||html!==(p.descriptionHtml||'')||st!==p.seo?.title||sd!==p.seo?.description;
    if(out.length<4)out.push({h:p.handle,title:title!==p.title?title:undefined,st,sd,descChanged:html!==(p.descriptionHtml||'')});
