@@ -38,7 +38,7 @@ export function seoDescription(title:string,html:string,opts:{outdoor?:boolean;f
  const sentences=body.split(/(?<=[.!?])\s+/).map(x=>x.trim()).filter(x=>x.length>30&&!/^(dimensions|size|height|width|please|note|delivery|sku|pot|planter not)/i.test(x)&&!/@|\d{5}/.test(x));
  let mid='';
  for(const x of sentences){const y=x.replace(/[.!?]+$/,'')+'.';if(y.length<=budget){mid=y;break;}
-  const clause=y.slice(0,budget).match(/^(.{40,}?[,;–-])(?!.*[,;–-])/)?.[1]||'';if(clause.length>=45){mid=clause.replace(/[\s,;:–-]+$/,'')+'.';break;}}
+  const cl=y.slice(0,budget);const ix=Math.max(cl.lastIndexOf(', '),cl.lastIndexOf('; '),cl.lastIndexOf(' – '),cl.lastIndexOf(' - '));const clause=ix>=40?cl.slice(0,ix):'';if(clause.length>=45){mid=clause.replace(/[\s,;:–-]+$/,'')+'.';break;}}
  if(!mid||mid.length<45)mid=perk+(budget-perk.length>45?' Realistic detail that looks great all year round.':'');
  else if(mid.length+perk.length+1<=budget)mid+=' '+perk;
  let d=`${t}: ${mid}${tail}`.replace(/\s+/g,' ').trim();
