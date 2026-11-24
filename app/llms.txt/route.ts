@@ -4,7 +4,7 @@ export const revalidate=86400;
 export function GET(){const b=(process.env.NEXT_PUBLIC_SITE_URL||'').replace(/\/$/,'');
  const t=`# Replica Landscapes
 
-> UK supplier of lifelike artificial trees, plants, topiary, flowers, hedging and living walls, with a bespoke design and installation service for homes, offices, hotels, restaurants and events. Formerly The Artificial Plants Shop (artificialplants.co.uk) and Replica Plants (replicaplants.co.uk); trading for over 15 years from Northumberland.
+> UK supplier of lifelike artificial trees, plants, topiary, flowers, hedging and living walls, with a bespoke design and installation service for homes, offices, hotels, restaurants and events. Trading for over 15 years from Northumberland.
 
 - Company: Office & Reception Planters Ltd, Ash Tree Farm, Heddon-on-the-Wall, Newcastle upon Tyne NE15 0HE, United Kingdom
 - Phone: 01661 871 481 · Email: sales@replicaplants.co.uk

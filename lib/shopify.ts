@@ -16,7 +16,7 @@ export async function graphql<T>(query:string,variables:Record<string,unknown>={
  const r=await fetch(`https://${domain}/api/${process.env.SHOPIFY_STOREFRONT_API_VERSION||'2026-10'}/graphql.json`,{method:'POST',headers:{'Content-Type':'application/json','X-Shopify-Storefront-Access-Token':process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN!},body:JSON.stringify({query,variables}),...(/^\s*mutation|cart\s*\(/.test(query)?{cache:'no-store' as const}:{next:{revalidate:120,tags:['shopify']}})});
  const data=await r.json();if(!r.ok||data.errors)throw new Error('Shopify request failed. Check store configuration.');return data.data;
 }
-const fields=`id handle title description productType tags availableForSale images(first:12){nodes{url altText}} priceRange{minVariantPrice{amount currencyCode}} variants(first:100){nodes{id title availableForSale price{amount currencyCode}}}`;
+const fields=`id handle title description seo{title description} productType tags availableForSale images(first:12){nodes{url altText}} priceRange{minVariantPrice{amount currencyCode}} variants(first:100){nodes{id title availableForSale price{amount currencyCode}}}`;
 /* Shopify doesn't know which photos are transparent cut-outs; the imported catalogue does, so carry that over by handle. */
 let cutouts:Set<string>|null=null;
 function isCutout(handle:string){if(!cutouts){try{cutouts=new Set(catalogue().filter((c:any)=>c.images?.[0]?.cutout).map((c:any)=>c.handle));}catch{cutouts=new Set();}}return cutouts.has(handle);}

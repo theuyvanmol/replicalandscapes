@@ -3,7 +3,7 @@ import {products} from '@/lib/shopify';import {COLLECTIONS,collectionBySlug} fro
 export const revalidate=3600;
 export function generateStaticParams(){return COLLECTIONS.map(c=>({slug:c.slug}));}
 export async function generateMetadata({params}:{params:Promise<{slug:string}>}){const c=collectionBySlug((await params).slug);if(!c)return {};
- return {title:c.title,description:c.description,alternates:{canonical:'/collections/'+c.slug},openGraph:{title:c.title+' | Replica Landscapes',description:c.description,type:'website'}};}
+ return {title:c.title+(/UK|Christmas/.test(c.title)?'':' UK'),description:c.description,alternates:{canonical:'/collections/'+c.slug},openGraph:{title:c.title+' | Replica Landscapes',description:c.description,type:'website'}};}
 const TYPE_RX:Record<string,RegExp>={Olive:/olive/,Palm:/palm/,Bamboo:/bamboo/,Ficus:/ficus/,Eucalyptus:/eucalyptus/,Blossom:/blossom/,Fern:/fern/,Succulent:/succulent/,Ivy:/ivy/,Grass:/grass/,'Boxwood & buxus':/boxwood|buxus/,Bay:/\bbay\b/,Orchid:/orchid/,Hydrangea:/hydrangea/,Lavender:/lavender/};
 export default async function CollectionPage({params}:{params:Promise<{slug:string}>}){
  const c=collectionBySlug((await params).slug);if(!c)notFound();

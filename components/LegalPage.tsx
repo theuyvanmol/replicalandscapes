@@ -8,4 +8,4 @@ export default function LegalPage({crumb,title,lead,updated,sections}:{crumb:str
   <EdFinal eyebrow="QUESTIONS?" title={<>Talk to<br/>a real person.</>} text="If anything here is unclear, call or email the team and we’ll explain."><a className="pill" href="/contact">Contact us <span>↗</span></a><a className="text-link" href="tel:+441661871481">Call 01661 871 481 ↗</a></EdFinal>
  </div></StoreShell>;
 }
-export const COMPANY=<>Office &amp; Reception Planters Ltd, trading as Replica Landscapes (previously The Artificial Plants Shop and Replica Plants), Ash Tree Farm, Heddon-on-the-Wall, Newcastle upon Tyne NE15 0HE. VAT number 890858276.</>;
+export const COMPANY=<>Office &amp; Reception Planters Ltd, trading as Replica Landscapes, Ash Tree Farm, Heddon-on-the-Wall, Newcastle upon Tyne NE15 0HE. VAT number 890858276.</>;
